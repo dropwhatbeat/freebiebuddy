@@ -154,9 +154,9 @@ export function PointCurator({
     }
     return [
       `Reading your ${skinType.toLowerCase()} skin profile…`,
-      `Scanning your ${shelfCount} products across skin, hair and makeup…`,
+      `Browsing your ${shelfCount} products across skin, hair and makeup…`,
       `Weighing your ${selected.length} beauty concerns…`,
-      `Scoring the rewards your points can reach…`,
+      `Curating the rewards your points can reach…`,
       `Picking the three that fit you best…`,
     ];
   }, [wish, shelf.length, skinType, selected.length]);
@@ -317,7 +317,7 @@ export function PointCurator({
             <h2 className="font-serif text-2xl">Top picks</h2>
 
             <p className="text-[10px] tracking-[0.2em] text-muted-foreground uppercase">
-              {busy ? "Scoring…" : `${picks.length} ${picks.length === 1 ? "pick" : "picks"}`}
+              {busy ? "Curating…" : `${picks.length} ${picks.length === 1 ? "pick" : "picks"}`}
             </p>
           </div>
 

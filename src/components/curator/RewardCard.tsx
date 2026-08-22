@@ -77,12 +77,14 @@ export function RewardCard({
       </h3>
       <p className="mt-1 font-serif">{reward.points.toLocaleString()} pts</p>
 
+      <div className="mt-4" />
+
       <motion.button
         type="button"
         {...(reduced ? {} : { whileTap: { scale: 0.985 } })}
         disabled={!done && !score.affordable}
         onClick={onToggleBag}
-        className={`mt-4 w-full py-3 text-[11px] tracking-[0.18em] uppercase transition-colors focus-visible:ring-1 focus-visible:ring-gold focus-visible:outline-none ${
+        className={`mt-auto w-full py-3 text-[11px] tracking-[0.18em] uppercase transition-colors focus-visible:ring-1 focus-visible:ring-gold focus-visible:outline-none ${
           done
             ? "border border-gold bg-gold-soft/40 text-ink hover:bg-transparent"
             : !score.affordable

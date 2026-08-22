@@ -310,7 +310,7 @@ export function PointCurator({
             caution={speech.caution}
             thinking={busy || Boolean(active) || Boolean(activePick) || Boolean(quip)}
             mood={!quip && shown?.score.tier === "Okay fit" ? "caution" : "calm"}
-            readKey={`${activeId ?? "intro"}-${quip ?? ""}-${busy}`}
+            readKey={`${activeId ?? "intro"}-${quip ?? ""}-${busy}-${busy ? loadingStep : ""}`}
           />
 
           <div className="mt-6 flex items-end justify-between border-b border-hairline pb-4">

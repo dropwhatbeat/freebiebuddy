@@ -20,12 +20,14 @@ export function Boutique({
   scored,
   redeemed,
   onRedeem,
+  onRemove,
   onExplain,
   activeId,
 }: {
   scored: ScoredReward[];
   redeemed: string[];
   onRedeem: (r: Reward) => void;
+  onRemove: (r: Reward) => void;
   onExplain: (r: Reward) => void;
   activeId: string | null;
 }) {

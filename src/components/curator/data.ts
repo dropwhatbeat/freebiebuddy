@@ -4,14 +4,18 @@ export const categories: Category[] = ["Skin", "Hair", "Makeup"];
 
 export type ConcernId =
   // skin
+  | "blackheads"
+  | "pigmentation"
+  | "lines"
   | "hydration"
   | "barrier"
-  | "brightening"
   | "texture"
   | "pores"
   | "firmness"
   // hair
   | "frizz"
+  | "dandruff"
+  | "hairdryness"
   | "scalp"
   | "damage"
   | "volume"

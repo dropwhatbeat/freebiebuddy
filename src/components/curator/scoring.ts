@@ -48,17 +48,55 @@ export function openGaps(selectedConcerns: ConcernId[], shelf: string[]): Concer
   return selectedConcerns.filter((c) => !covered.has(c));
 }
 
+/**
+ * Priority weight for a concern: earlier in her profile = higher priority.
+ * First concern ~1.0, tapering to ~0.4 for the last one.
+ */
+function priorityWeight(id: ConcernId, selected: ConcernId[]): number {
+  const i = selected.indexOf(id);
+  if (i < 0) return 0;
+  const n = Math.max(1, selected.length - 1);
+  return 1 - 0.6 * (i / n);
+}
+
+const BEST_THRESHOLD = 1.62;
+const GOOD_THRESHOLD = 1.0;
+
 export function scoreReward(reward: Reward, input: ScoreInput): Score {
   const matchedConcerns = reward.covers.filter((c) => input.selectedConcerns.includes(c));
   const loved = reward.covers.filter((c) => input.enjoys.includes(c));
   const suitsSkin = !(reward.avoidFor ?? []).includes(input.skinType);
+
+  // Ranked by how much she cares about each matched concern.
+  const ranked = [...matchedConcerns].sort(
+    (a, b) => priorityWeight(b, input.selectedConcerns) - priorityWeight(a, input.selectedConcerns),
+  );
+
+  // 1. Priority-weighted concern match, with diminishing returns per extra match.
+  let value = 0;
+  ranked.forEach((c, i) => {
+    value += priorityWeight(c, input.selectedConcerns) * (i === 0 ? 1 : i === 1 ? 0.45 : 0.2);
+  });
+
+  // 2. Focus: a reward that mostly speaks to her concerns beats one that grazes them.
+  const focus = reward.covers.length ? matchedConcerns.length / reward.covers.length : 0;
+  value += focus * 0.25;
+
+  // 3. Skin-type suitability.
+  value += suitsSkin ? 0.1 : -0.55;
+
+  // 4. Things she already reaches for — a nudge, never enough on its own.
+  if (loved.length) value += 0.2;
+
+  // 5. Nothing relevant at all pulls it down.
+  if (!matchedConcerns.length && !loved.length) value -= 0.25;
 
   const lines: ScoreLine[] = [];
 
   if (matchedConcerns.length) {
     lines.push({
       label: "Answers your concerns",
-      detail: `Works on ${matchedConcerns.map(label).join(" and ").toLowerCase()} from your beauty profile.`,
+      detail: `Works on ${ranked.map(label).join(" and ").toLowerCase()} from your beauty profile.`,
       weight: "positive",
     });
   } else if (loved.length) {
@@ -107,21 +145,32 @@ export function scoreReward(reward: Reward, input: ScoreInput): Score {
   );
 
   let tier: FitTier;
-  let headline: string;
-
-  if (matchedConcerns.length && suitsSkin) {
+  if (value >= BEST_THRESHOLD && matchedConcerns.length > 0 && suitsSkin) {
     tier = "Best fit";
-    headline = `Made for ${matchedConcerns.map(label).join(" and ").toLowerCase()} — one of your stated concerns.`;
-  } else if (loved.length && suitsSkin) {
+  } else if (value >= GOOD_THRESHOLD) {
     tier = "Good fit";
-    headline = `More of the ${loved.map(label).join(", ").toLowerCase()} you already redeem.`;
-  } else if (suitsSkin) {
-    tier = "Good fit";
-    headline = "Nothing against it — it just isn't answering a stated concern.";
   } else {
     tier = "Okay fit";
+  }
+
+  const top = ranked[0];
+  let headline: string;
+  if (tier === "Best fit") {
+    headline = `Made for ${ranked.slice(0, 2).map(label).join(" and ").toLowerCase()} — top of your beauty profile.`;
+  } else if (tier === "Good fit") {
+    headline = top
+      ? `Helps with ${label(top).toLowerCase()}, a secondary note on your profile.`
+      : loved.length
+        ? `More of the ${loved.map(label).join(", ").toLowerCase()} you already redeem.`
+        : "A solid pick, just not tied to a stated concern.";
+  } else if (!suitsSkin) {
     headline =
-      reward.avoidReason ?? `Not the obvious match for ${input.skinType.toLowerCase()} skin, but nothing stopping you.`;
+      reward.avoidReason ??
+      `Not the obvious match for ${input.skinType.toLowerCase()} skin — nothing stopping you from trying.`;
+  } else {
+    headline = top
+      ? `Only lightly touches ${label(top).toLowerCase()} — try it if you're curious.`
+      : "Outside what you've flagged — nothing stopping you from trying.";
   }
 
   return {
@@ -134,6 +183,7 @@ export function scoreReward(reward: Reward, input: ScoreInput): Score {
     shortBy: Math.max(0, reward.points - input.points),
   };
 }
+
 
 export const tierRank: Record<FitTier, number> = {
   "Best fit": 0,

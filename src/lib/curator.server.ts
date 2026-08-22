@@ -73,6 +73,7 @@ export async function recommendRewardsWithAi(raw: RawInput): Promise<RecommendRe
       .filter((p, i, arr) => arr.findIndex((x) => x.rewardId === p.rewardId) === i)
       .slice(0, 3);
 
+    console.log("[curator] ai picks", JSON.stringify(answer).slice(0,600));
     if (!picks.length) return fallback();
 
     // Top up from the rule ranking if the model returned fewer than three.
@@ -83,6 +84,7 @@ export async function recommendRewardsWithAi(raw: RawInput): Promise<RecommendRe
 
     return { picks, intro: answer.intro, source: "ai" };
   } catch (error) {
+    console.log("[curator] error", String(error).slice(0,800));
     if (NoObjectGeneratedError.isInstance(error)) return fallback();
 
     const message = error instanceof Error ? error.message : "";

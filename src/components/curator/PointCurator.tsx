@@ -17,17 +17,18 @@ import { concerns as allConcerns } from "./data";
 
 export function PointCurator({
   points,
+  redeemed,
   onRedeem,
 }: {
   points: number;
-  onRedeem: (r: { product: string; points: number }) => void;
+  redeemed: string[];
+  onRedeem: (r: { id: string; product: string; points: number }) => void;
 }) {
   const reduced = useReducedMotion();
   const [railOpen, setRailOpen] = useState(true);
   const [skinType, setSkinType] = useState<SkinType>(defaultProfile.skinType);
   const [selected, setSelected] = useState<ConcernId[]>(defaultProfile.concerns);
   const [shelf, setShelf] = useState<string[]>(defaultShelf);
-  const [redeemed, setRedeemed] = useState<string[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
 
   const gaps = useMemo(() => openGaps(selected, shelf), [selected, shelf]);
@@ -88,8 +89,7 @@ export function PointCurator({
 
   const handleRedeem = (r: Reward) => {
     if (redeemed.includes(r.id) || r.points > points) return;
-    setRedeemed((prev) => [...prev, r.id]);
-    onRedeem({ product: r.name, points: r.points });
+    onRedeem({ id: r.id, product: r.name, points: r.points });
   };
 
   const toggleConcern = (c: ConcernId) =>
@@ -99,7 +99,7 @@ export function PointCurator({
     setShelf((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
 
   return (
-    <div className="mx-auto max-w-7xl px-8 py-14">
+    <div className="mx-auto max-w-7xl px-8 pt-10 pb-14">
       <div
         className={`grid gap-12 ${railOpen ? "lg:grid-cols-[300px_minmax(0,1fr)]" : "lg:grid-cols-[52px_minmax(0,1fr)]"}`}
       >

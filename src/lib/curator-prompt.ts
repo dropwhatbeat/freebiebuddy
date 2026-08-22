@@ -1,5 +1,6 @@
 import {
   concerns as allConcerns,
+  defaultProfile,
   pastPurchases,
   rewardCatalogue,
   rewardIngredients,
@@ -114,12 +115,21 @@ export function buildBrief(input: RecommendRequest) {
     .join("\n");
 
   return [
-    `MEMBER PROFILE`,
+    `MEMBER PROFILE (declared in her Beauty Profile — source of truth)`,
     `Skin type: ${input.skinType}`,
+    `Hair: ${defaultProfile.hairType}, ${defaultProfile.hairTexture}, ${defaultProfile.scalpType} scalp`,
+    `Fragrance preference: ${defaultProfile.fragrance.type} — ${defaultProfile.fragrance.families.join(", ")}`,
     `Concerns: ${input.concerns.map(label).join(", ")}`,
     `Enjoys redeeming for: ${input.enjoys.map(label).join(", ")}`,
     `Points available: ${input.points}`,
     `Concerns her current shelves do NOT answer: ${gaps.length ? gaps.map(label).join(", ") : "none — every stated concern is covered"}`,
+    ``,
+    `SKINCREDIBLE SCAN (measured in store, ${defaultProfile.scan.date} at ${defaultProfile.scan.store}) — supporting evidence only`,
+    `Overall skin score: ${defaultProfile.scan.score}/100`,
+    ...defaultProfile.scan.metrics.map(
+      (m) => `- ${m.title}: ${m.value}/100 (${m.status}) — ${m.note}`,
+    ),
+    `Routine steps she already follows: ${defaultProfile.scan.routineSteps.join(", ")}`,
     ``,
     `CURRENT SHELF (what she is using now)`,
     shelfLines || "- (empty shelf)",
@@ -152,6 +162,7 @@ Rules:
 - Choose ONLY reward ids that appear in the catalogue (detailed or summary list).
 - Prefer rewards that close a concern her current shelf does not answer; if nothing is missing, pick on skin type and the categories she enjoys.
 - Prefer rewards she can afford with her points. Never recommend one that clashes with her skin type or an active on her shelf unless she explicitly asked for it — and then label it "Okay fit".
+- Her declared Beauty Profile concerns outrank the Skincredible scan whenever they conflict. Use scan metrics as supporting evidence and cite a number when it strengthens a reason (e.g. "your scan puts hydration at 64").
 - Use the supplied product details (editor's note, key actives, routine placement, cautions) and rule-scored facts as ground truth. Do not invent ingredients, conflicts, or claims.
 - reason: two or three short sentences, personal and specific. Every reason MUST name at least one concrete detail — a named active or ingredient, a product already on her shelf, or her typed request.
 - routine: one short sentence on where it slots into her routine, grounded in the product's routine placement.

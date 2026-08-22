@@ -4,14 +4,18 @@ export const categories: Category[] = ["Skin", "Hair", "Makeup"];
 
 export type ConcernId =
   // skin
+  | "blackheads"
+  | "pigmentation"
+  | "lines"
   | "hydration"
   | "barrier"
-  | "brightening"
   | "texture"
   | "pores"
   | "firmness"
   // hair
   | "frizz"
+  | "dandruff"
+  | "hairdryness"
   | "scalp"
   | "damage"
   | "volume"
@@ -28,6 +32,19 @@ export interface Concern {
 }
 
 export const concerns: Concern[] = [
+  { id: "blackheads", label: "Blackheads", blurb: "Congestion across the nose and chin", category: "Skin" },
+  {
+    id: "pigmentation",
+    label: "Pigmentation & dark spots",
+    blurb: "Uneven tone, lingering marks",
+    category: "Skin",
+  },
+  {
+    id: "lines",
+    label: "Fine lines & wrinkles",
+    blurb: "Scan reads moderate lines",
+    category: "Skin",
+  },
   { id: "hydration", label: "Hydration", blurb: "Tight by mid-afternoon", category: "Skin" },
   {
     id: "barrier",
@@ -35,18 +52,14 @@ export const concerns: Concern[] = [
     blurb: "Reacts to strong actives",
     category: "Skin",
   },
-  {
-    id: "brightening",
-    label: "Brightening",
-    blurb: "Post-acne marks, uneven tone",
-    category: "Skin",
-  },
   { id: "texture", label: "Texture", blurb: "Rough patches around the chin", category: "Skin" },
   { id: "pores", label: "Pores & oil", blurb: "Shine through the T-zone", category: "Skin" },
   { id: "firmness", label: "Firmness", blurb: "Early loss of bounce", category: "Skin" },
 
-  { id: "frizz", label: "Frizz", blurb: "Humidity lifts the surface", category: "Hair" },
-  { id: "scalp", label: "Scalp care", blurb: "Flaking at the crown", category: "Hair" },
+  { id: "frizz", label: "Frizz", blurb: "Humidity lifts curly, permed lengths", category: "Hair" },
+  { id: "dandruff", label: "Dandruff", blurb: "Flaking on a dry scalp", category: "Hair" },
+  { id: "hairdryness", label: "Dryness", blurb: "Thick, curly hair drinks moisture", category: "Hair" },
+  { id: "scalp", label: "Scalp care", blurb: "Dry scalp needs balancing", category: "Hair" },
   { id: "damage", label: "Damage & split ends", blurb: "Colour-treated mid-lengths", category: "Hair" },
   { id: "volume", label: "Volume", blurb: "Flat by the second day", category: "Hair" },
 
@@ -114,7 +127,7 @@ export const pastPurchases: Product[] = [
     step: "Treat",
     vessel: "vitc",
     image: `${IMG}1_Product_702685964492-Indie-Lee-CoQ-10-Toner-125ml_2f17dc37ed6fa81f6e884fca9a0c98c9f2b036c8_1709021939.png`,
-    covers: ["brightening"],
+    covers: ["pigmentation"],
     routine: "Swept on after cleansing, morning and night.",
     actives: ["antioxidant"],
     purchased: "Oct 2020",
@@ -306,21 +319,64 @@ export const defaultShelf = [
 ];
 
 
+export interface ScanMetric {
+  title: string;
+  value: number;
+  status: "good" | "average" | "low";
+  note: string;
+}
+
+/**
+ * Emily's declared Beauty Profile plus her in-store Skincredible scan.
+ * Declared concerns are the source of truth; the scan is supporting evidence.
+ */
 export const defaultProfile = {
   name: "Emily",
-  skinType: "Combination" as SkinType,
+  skinType: "Normal" as SkinType,
+  hairType: "Thick",
+  hairTexture: "Curly / permed",
+  scalpType: "Dry",
+  fragrance: {
+    type: "Women",
+    families: ["Citrus & fruity", "Floral"],
+  },
   concerns: [
-    "hydration",
-    "barrier",
-    "brightening",
-    "texture",
+    "blackheads",
+    "pigmentation",
+    "lines",
     "frizz",
-    "scalp",
-    "longwear",
-    "lipcare",
+    "dandruff",
+    "hairdryness",
   ] as ConcernId[],
   /** What she redeems most — used when there is no gap to close. */
   enjoys: ["hydration", "coverage"] as ConcernId[],
+  scan: {
+    score: 75,
+    date: "16 Aug 2026",
+    store: "ION Orchard",
+    metrics: [
+      {
+        title: "Hydration",
+        value: 64,
+        status: "average",
+        note: "Your skin is moderately hydrated",
+      },
+      { title: "Lines", value: 74, status: "average", note: "Your skin shows moderate lines" },
+      { title: "Pores", value: 82, status: "good", note: "Your pores are barely detectable" },
+      { title: "Sebum", value: 80, status: "good", note: "Minimal excess surface oil" },
+    ] as ScanMetric[],
+    routineSteps: [
+      "Makeup remover",
+      "Facial cleanser",
+      "Exfoliator",
+      "Toner",
+      "Serum & boosters",
+      "Moisturiser",
+      "Sunscreen",
+      "Masks",
+      "Beauty tools",
+    ],
+  },
 };
 
 export interface Reward {
@@ -350,7 +406,7 @@ export interface Reward {
 }
 
 /** Real Beauty Pass Rewards Boutique catalogue (demo copy of a live redeemables feed). */
-export const rewardCatalogue: Reward[] = [
+const rawRewardCatalogue: Reward[] = [
   {
     id: "pixi-glow-tonic-exfoliating-toner",
     name: "Glow Tonic Exfoliating Toner (15 ml)",
@@ -358,7 +414,7 @@ export const rewardCatalogue: Reward[] = [
     category: "Skin",
     points: 100,
     tier: "All members",
-    covers: ["texture", "brightening", "pores"],
+    covers: ["texture", "pigmentation", "pores"],
     vessel: 0,
     image: "https://image-optimizer-reg.production.sephora-asia.net/images/product_images/1_GWP_885190821044-Pixi-Glow-Tonic-Exfoliating-Toner-15-ml-Default_c7bca4a96c14119158ef21870d8050245fc5f0d0_1646046005.png",
     routine: "Sweep over cleansed skin using a cotton pad in the evening before serums.",
@@ -446,7 +502,7 @@ export const rewardCatalogue: Reward[] = [
     category: "Skin",
     points: 100,
     tier: "All members",
-    covers: ["texture", "brightening", "pores"],
+    covers: ["texture", "pigmentation", "pores"],
     vessel: 0,
     image: "https://image-optimizer-reg.production.sephora-asia.net/images/product_images/1_GWP_810052965697-Glow-Recipe-Toner-Pad-Collection-Trial-Se_116a2cce0d1b50ae78d9b2463492330c39550410_1772623497.png?o=clean-planet-aware",
     routine: "Wipe across clean skin after cleansing, tapping remaining essence in before applying serum.",
@@ -536,7 +592,7 @@ export const rewardCatalogue: Reward[] = [
     category: "Skin",
     points: 200,
     tier: "All members",
-    covers: ["brightening", "firmness"],
+    covers: ["pigmentation", "firmness"],
     vessel: 0,
     image: "https://image-optimizer-reg.production.sephora-asia.net/images/product_images/1_GWP_3378870195346-Sephora-Collection-Super-Glow-8ml-Defaul_f8ee934a5201d32440a4e4a56b8067f726577e01_1747367992.png?o=clean",
     routine: "Apply 3 to 4 drops to clean skin in the morning before moisturiser and sun protection.",
@@ -858,7 +914,7 @@ export const rewardCatalogue: Reward[] = [
     category: "Skin",
     points: 500,
     tier: "Gold & Black",
-    covers: ["texture", "brightening", "pores"],
+    covers: ["texture", "pigmentation", "pores"],
     vessel: 4,
     image: "https://image-optimizer-reg.production.sephora-asia.net/images/product_images/1_GWP_695866582861-DR-DENNIS-GROSS-Alpha-Beta-Extra-Strength-Daily-Peel-3-Treatments-Defau_618b2274b3c43463034ac36dce0010cecdc07a0f_1666279713.png",
     routine: "Massage Step 1 pad over clean, dry skin until dry, wait 2 minutes, then follow with Step 2.",
@@ -877,7 +933,7 @@ export const rewardCatalogue: Reward[] = [
     category: "Skin",
     points: 500,
     tier: "Gold & Black",
-    covers: ["texture", "brightening", "pores"],
+    covers: ["texture", "pigmentation", "pores"],
     vessel: 5,
     image: "https://image-optimizer-reg.production.sephora-asia.net/images/product_images/1_GWP_695866581468-DR-DENNIS-GROSS-Alpha-Beta-Universal-Daily-Peel-3-Treatments-Default_856e65950090415cc46f9ff9f4a15f4703d8af75_1666279711.png",
     routine: "Wipe Step 1 over clean, dry skin, wait 2 minutes, then apply Step 2 before serums.",
@@ -948,6 +1004,27 @@ export const rewardCatalogue: Reward[] = [
     conflictReason: "Avoid layering immediately with direct high-strength L-ascorbic acid to avoid peptide destabilisation.",
   },
 ];
+
+/**
+ * Maps catalogue coverage onto the concern vocabulary used by the Beauty Profile
+ * (blackheads, fine lines, dandruff, hair dryness) so gap detection stays accurate.
+ */
+const concernAliases: Partial<Record<ConcernId, ConcernId[]>> = {
+  pores: ["blackheads"],
+  texture: ["blackheads"],
+  firmness: ["lines"],
+  scalp: ["dandruff"],
+};
+
+export const rewardCatalogue: Reward[] = rawRewardCatalogue.map((reward) => {
+  const covers = new Set<ConcernId>(reward.covers);
+  for (const id of reward.covers) {
+    for (const alias of concernAliases[id] ?? []) covers.add(alias);
+    // Hair products that hydrate answer hair dryness, not facial hydration.
+    if (reward.category === "Hair" && id === "hydration") covers.add("hairdryness");
+  }
+  return { ...reward, covers: [...covers] };
+});
 
 export interface Ingredient {
   name: string;

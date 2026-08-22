@@ -186,9 +186,6 @@ export function PointCurator({
                     <span className="text-[10px] tracking-[0.2em] text-gold uppercase">
                       {reward.category}
                     </span>
-                    <span className="text-[10px] tracking-[0.16em] text-muted-foreground uppercase">
-                      {reward.type}
-                    </span>
                   </div>
                   <FitBadge tier={score.tier} segments={score.segments} />
                   <h3 className="mt-4 font-serif text-xl leading-snug">{reward.name}</h3>

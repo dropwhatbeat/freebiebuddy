@@ -1,11 +1,14 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
+import { useMutation } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 
 import { CompactOrb, CuratorSpeech, MicroSpark } from "./CompactOrb";
 import { ProfileRail } from "./ProfileRail";
 import { Boutique, type ScoredReward } from "./Boutique";
 import { RewardCard } from "./RewardCard";
 import { QuickView } from "./QuickView";
+import { RecommendationPrompt } from "./RecommendationPrompt";
 import {
   defaultProfile,
   defaultShelf,
@@ -16,6 +19,9 @@ import {
 } from "./data";
 import { openGaps, scoreReward, tierRank } from "./scoring";
 import { concerns as allConcerns } from "./data";
+import { recommendRewards } from "@/lib/curator.functions";
+import { rulePicks, ruleIntro, type RecommendResult } from "@/lib/curator-prompt";
+
 
 export function PointCurator({
   points,

@@ -164,6 +164,33 @@ export function PointCurator({
       return next;
     });
 
+  /** One read, shared by the hero panel and the sticky companion bar. */
+  const speech = {
+    title: quip
+      ? "Freebie Buddy · ahem"
+      : busy
+        ? "Freebie Buddy · scoring your rewards"
+        : activePick || active
+          ? `Freebie Buddy · ${shown?.reward.name}`
+          : `Freebie Buddy · here's what I suggest for you`,
+    body: quip
+      ? quip
+      : busy
+        ? wish
+          ? `Reading your shelves against “${wish}” — one moment.`
+          : "Scoring every reward against your profile and shelves — one moment."
+        : activePick
+          ? `${activePick.score.headline} ${activePick.aiRoutine}`
+          : active
+            ? `${active.score.headline} ${active.reward.routine}`
+            : result.intro,
+    caution:
+      !quip && !busy
+        ? (activePick?.aiCaution ?? (active ? active.reward.caution : undefined))
+        : undefined,
+  };
+
+
   return (
     <div className="mx-auto max-w-7xl px-8 pt-10 pb-14">
       <div

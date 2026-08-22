@@ -1,10 +1,11 @@
 import { useMemo, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 
-import { RewardVessel } from "./illustrations";
-import { MicroSpark } from "./CompactOrb";
+import { RewardCard } from "./RewardCard";
 import { categories, type Reward } from "./data";
-import { tierRank, type FitTier, type Score } from "./scoring";
+import { tierRank, type Score } from "./scoring";
+
+export { FitBadge } from "./FitBadge";
 
 export interface ScoredReward {
   reward: Reward;
@@ -22,6 +23,7 @@ export function Boutique({
   onRedeem,
   onRemove,
   onExplain,
+  onQuickView,
   activeId,
 }: {
   scored: ScoredReward[];
@@ -29,6 +31,7 @@ export function Boutique({
   onRedeem: (r: Reward) => void;
   onRemove: (r: Reward) => void;
   onExplain: (r: Reward) => void;
+  onQuickView: (r: Reward) => void;
   activeId: string | null;
 }) {
   const reduced = useReducedMotion();
@@ -101,104 +104,24 @@ export function Boutique({
           {items.map(({ reward, score }) => {
             const done = redeemed.includes(reward.id);
             return (
-              <motion.article
+              <motion.div
                 layout
                 key={reward.id}
                 initial={reduced ? false : { opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={reduced ? { opacity: 0 } : { opacity: 0, scale: 0.98 }}
                 transition={{ duration: 0.25, ease: "easeOut" }}
-                onMouseEnter={() => onExplain(reward)}
-                onFocus={() => onExplain(reward)}
-                tabIndex={0}
-                className={`group flex flex-col bg-card p-6 transition-colors focus-visible:outline-none ${
-                  activeId === reward.id ? "bg-secondary/40" : ""
-                }`}
               >
-                <div className="flex items-start justify-between">
-                  <RewardVessel
-                    variant={reward.vessel}
-                    className={`h-12 w-auto transition-colors duration-300 ${
-                      score.tier === "Not for your skin"
-                        ? "text-muted-foreground"
-                        : "text-ink group-hover:text-gold"
-                    }`}
-                  />
-                  <span className="text-right text-[10px] tracking-[0.16em] text-muted-foreground uppercase">
-                    {reward.category}
-                  </span>
-                </div>
-
-
-
-
-                <FitBadge tier={score.tier} segments={score.segments} />
-
-                <p className="mt-4 text-[10px] tracking-[0.2em] text-muted-foreground uppercase">
-                  {reward.brand}
-                </p>
-                <h3 className="mt-2 font-serif text-lg leading-snug">{reward.name}</h3>
-                <p className="mt-3 font-serif">{reward.points.toLocaleString()} pts</p>
-                <p className="mt-1 text-[11px] tracking-[0.12em] text-muted-foreground uppercase">
-                  {reward.tier}
-                </p>
-
-                <p className="mt-4 text-[13px] leading-relaxed text-charcoal">
-                  {score.headline}
-                </p>
-
-                <ul className="mt-3 space-y-1.5 border-t border-hairline pt-3 text-[12px] leading-relaxed text-muted-foreground transition-opacity duration-300">
-                  {score.lines.map((l) => (
-                    <li key={l.label} className="flex gap-2">
-                      <span
-                        aria-hidden
-                        className={
-                          l.weight === "negative"
-                            ? "text-charcoal"
-                            : l.weight === "positive"
-                              ? "text-gold"
-                              : "text-muted-foreground"
-                        }
-                      >
-                        {l.weight === "negative" ? "—" : l.weight === "positive" ? "+" : "·"}
-                      </span>
-                      <span>
-                        <span className="text-ink">{l.label}.</span> {l.detail}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-
-                <div className="mt-auto flex items-center gap-4 pt-6">
-                  <button
-                    type="button"
-                    disabled={!done && !score.affordable}
-                    onClick={() => (done ? onRemove(reward) : onRedeem(reward))}
-                    className={`flex-1 py-2.5 text-[10px] tracking-[0.2em] uppercase transition-colors focus-visible:ring-1 focus-visible:ring-gold focus-visible:outline-none ${
-                      done
-                        ? "border border-gold bg-gold-soft/30 text-ink hover:bg-transparent"
-                        : !score.affordable
-                          ? "border border-hairline text-muted-foreground"
-                          : "border border-ink text-ink hover:bg-ink hover:text-primary-foreground"
-                    }`}
-                  >
-                    {done
-                      ? "In bag — remove"
-                      : score.affordable
-                        ? "Add to bag"
-                        : `${score.shortBy.toLocaleString()} pts short`}
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => onExplain(reward)}
-                    aria-label={`Ask the Curator about ${reward.name}`}
-                    className="flex items-center gap-1.5 text-[10px] tracking-[0.18em] text-gold uppercase hover:underline focus-visible:ring-1 focus-visible:ring-gold focus-visible:outline-none"
-                  >
-                    <MicroSpark className="h-2.5 w-2.5" /> Ask
-                  </button>
-                </div>
-              </motion.article>
+                <RewardCard
+                  reward={reward}
+                  score={score}
+                  done={done}
+                  active={activeId === reward.id}
+                  onToggleBag={() => (done ? onRemove(reward) : onRedeem(reward))}
+                  onQuickView={() => onQuickView(reward)}
+                  onHover={() => onExplain(reward)}
+                />
+              </motion.div>
             );
           })}
         </AnimatePresence>
@@ -210,49 +133,6 @@ export function Boutique({
         </p>
       )}
     </section>
-  );
-}
-
-export function FitBadge({
-  tier,
-  segments,
-  className = "",
-}: {
-  tier: FitTier;
-  segments: number;
-  className?: string;
-}) {
-  return (
-    <div className={`mt-5 flex items-center gap-3 ${className}`}>
-      <span
-        className={`flex gap-1`}
-        role="img"
-        aria-label={`${tier}, ${segments} of 3`}
-      >
-        {[0, 1, 2].map((i) => (
-          <motion.span
-            key={i}
-            initial={false}
-            animate={{ opacity: i < segments ? 1 : 0.18 }}
-            transition={{ duration: 0.35, delay: i * 0.06 }}
-            className={`block h-[3px] w-6 ${
-              tier === "Not for your skin" ? "bg-charcoal" : "bg-gold"
-            }`}
-          />
-        ))}
-      </span>
-      <span
-        className={`text-[10px] tracking-[0.2em] uppercase ${
-          tier === "Best fit"
-            ? "text-gold"
-            : tier === "Good fit"
-              ? "text-charcoal"
-              : "text-muted-foreground"
-        }`}
-      >
-        {tier}
-      </span>
-    </div>
   );
 }
 

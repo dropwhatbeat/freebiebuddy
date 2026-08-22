@@ -240,34 +240,11 @@ export function PointCurator({
 
               <div className="self-start">
                 <CuratorSpeech
-                  title={
-                    quip
-                      ? "Freebie Buddy · ahem"
-                      : busy
-                        ? "Freebie Buddy · scoring your rewards"
-                        : activePick || active
-                          ? `Freebie Buddy · ${shown?.reward.name}`
-                          : `Freebie Buddy · here's what I suggest for you`
-                  }
-                  body={
-                    quip
-                      ? quip
-                      : busy
-                        ? wish
-                          ? `Reading your shelves against “${wish}” — one moment.`
-                          : "Scoring every reward against your profile and shelves — one moment."
-                        : activePick
-                          ? `${activePick.score.headline} ${activePick.aiRoutine}`
-                          : active
-                            ? `${active.score.headline} ${active.reward.routine}`
-                            : result.intro
-                  }
-                  caution={
-                    !quip && !busy
-                      ? (activePick?.aiCaution ?? (active ? active.reward.caution : undefined))
-                      : undefined
-                  }
+                  title={speech.title}
+                  body={speech.body}
+                  caution={speech.caution}
                 />
+
 
                 {result.note && !busy && (
                   <p className="mt-3 text-[11px] text-muted-foreground">{result.note}</p>

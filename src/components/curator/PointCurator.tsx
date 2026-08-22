@@ -219,20 +219,25 @@ export function PointCurator({
                   </ul>
                   <button
                     type="button"
-                    disabled={redeemed.includes(reward.id) || !score.affordable}
-                    onClick={() => handleRedeem(reward)}
-                    className={`mt-auto w-full py-3 text-[10px] tracking-[0.22em] uppercase transition-colors focus-visible:ring-1 focus-visible:ring-gold focus-visible:outline-none ${
-                      redeemed.includes(reward.id) || !score.affordable
-                        ? "mt-6 border border-hairline text-muted-foreground"
-                        : "mt-6 bg-ink text-primary-foreground hover:bg-charcoal"
+                    disabled={!redeemed.includes(reward.id) && !score.affordable}
+                    onClick={() =>
+                      redeemed.includes(reward.id) ? handleRemove(reward) : handleRedeem(reward)
+                    }
+                    className={`mt-6 w-full py-3 text-[10px] tracking-[0.22em] uppercase transition-colors focus-visible:ring-1 focus-visible:ring-gold focus-visible:outline-none ${
+                      redeemed.includes(reward.id)
+                        ? "border border-gold bg-gold-soft/30 text-ink hover:bg-transparent"
+                        : !score.affordable
+                          ? "border border-hairline text-muted-foreground"
+                          : "bg-ink text-primary-foreground hover:bg-charcoal"
                     }`}
                   >
                     {redeemed.includes(reward.id)
-                      ? "In your bag"
+                      ? "In bag — remove"
                       : score.affordable
                         ? "Add to bag"
                         : `${score.shortBy.toLocaleString()} pts short`}
                   </button>
+
                 </motion.article>
               ))}
             </div>

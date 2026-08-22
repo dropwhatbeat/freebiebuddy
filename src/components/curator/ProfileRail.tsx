@@ -226,7 +226,7 @@ function ShelfGroup({
         onClick={nudge}
         role="presentation"
       >
-        <div className="flex min-h-[52px] items-end gap-1 px-1">
+        <div className="shelf-scroll flex min-h-[52px] items-end gap-1 overflow-x-auto overflow-y-visible px-1 pt-16">
           <AnimatePresence initial={false}>
             {onShelf.map((p) => (
               <motion.div

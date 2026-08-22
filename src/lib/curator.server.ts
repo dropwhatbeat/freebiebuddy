@@ -68,12 +68,24 @@ export async function recommendRewardsWithAi(raw: RawInput): Promise<RecommendRe
 
     const answer = await result.output;
 
+    const hasWish = Boolean(input.wish?.trim());
+    const maxPicks = hasWish ? 6 : 3;
+
     const picks: AiPick[] = answer.picks
       .filter((p) => validRewardIds.has(p.rewardId))
       .filter((p, i, arr) => arr.findIndex((x) => x.rewardId === p.rewardId) === i)
-      .slice(0, 6);
+      .slice(0, maxPicks);
 
     if (!picks.length) return fallback();
+
+    // No typed request: always present exactly 3 picks, topped up from rule ranking.
+    if (!hasWish && picks.length < 3) {
+      for (const extra of rulePicks(input, 6)) {
+        if (picks.length >= 3) break;
+        if (picks.some((p) => p.rewardId === extra.rewardId)) continue;
+        picks.push(extra);
+      }
+    }
 
     return { picks, intro: answer.intro, source: "ai" };
   } catch (error) {

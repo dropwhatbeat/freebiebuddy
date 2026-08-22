@@ -60,7 +60,7 @@ function priorityWeight(id: ConcernId, selected: ConcernId[]): number {
 }
 
 const BEST_THRESHOLD = 1.62;
-const GOOD_THRESHOLD = 0.90;
+const GOOD_THRESHOLD = 1.0;
 
 export function scoreReward(reward: Reward, input: ScoreInput): Score {
   const matchedConcerns = reward.covers.filter((c) => input.selectedConcerns.includes(c));

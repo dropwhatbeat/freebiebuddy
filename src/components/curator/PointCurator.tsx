@@ -187,75 +187,24 @@ export function PointCurator({
 
             <div className="grid gap-px bg-hairline sm:grid-cols-2 xl:grid-cols-3">
               {picks.map(({ reward, score }, i) => (
-                <motion.article
+                <motion.div
                   key={reward.id}
                   initial={reduced ? false : { opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.35, delay: i * 0.08 }}
-                  onMouseEnter={() => setActiveId(reward.id)}
-                  onFocus={() => setActiveId(reward.id)}
-                  tabIndex={0}
-                  className={`flex flex-col bg-card p-6 transition-colors focus-visible:outline-none ${
-                    activeId === reward.id ? "bg-secondary/40" : ""
-                  }`}
                 >
-                  <div className="flex items-start justify-between">
-                    <span className="text-[10px] tracking-[0.2em] text-gold uppercase">
-                      {reward.category}
-                    </span>
-                  </div>
-                  <FitBadge tier={score.tier} segments={score.segments} />
-                  <h3 className="mt-4 font-serif text-xl leading-snug">{reward.name}</h3>
-                  <p className="mt-1 text-[10px] tracking-[0.2em] text-muted-foreground uppercase">
-                    {reward.brand}
-                  </p>
-                  <p className="mt-3 font-serif">{reward.points.toLocaleString()} pts</p>
-                  <p className="mt-3 text-[13px] leading-relaxed text-charcoal">
-                    {score.headline}
-                  </p>
-                  <ul className="mt-3 space-y-2 border-t border-hairline pt-3 text-[12px] leading-relaxed text-muted-foreground">
-                    {score.lines.map((l) => (
-                      <li key={l.label} className="flex gap-2">
-                        <span
-                          aria-hidden
-                          className={
-                            l.weight === "negative"
-                              ? "text-charcoal"
-                              : l.weight === "positive"
-                                ? "text-gold"
-                                : "text-muted-foreground"
-                          }
-                        >
-                          {l.weight === "negative" ? "—" : l.weight === "positive" ? "+" : "·"}
-                        </span>
-                        <span>
-                          <span className="text-ink">{l.label}.</span> {l.detail}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                  <button
-                    type="button"
-                    disabled={!redeemed.includes(reward.id) && !score.affordable}
-                    onClick={() =>
+                  <RewardCard
+                    reward={reward}
+                    score={score}
+                    done={redeemed.includes(reward.id)}
+                    active={activeId === reward.id}
+                    onToggleBag={() =>
                       redeemed.includes(reward.id) ? handleRemove(reward) : handleRedeem(reward)
                     }
-                    className={`mt-6 w-full py-3 text-[10px] tracking-[0.22em] uppercase transition-colors focus-visible:ring-1 focus-visible:ring-gold focus-visible:outline-none ${
-                      redeemed.includes(reward.id)
-                        ? "border border-gold bg-gold-soft/30 text-ink hover:bg-transparent"
-                        : !score.affordable
-                          ? "border border-hairline text-muted-foreground"
-                          : "bg-ink text-primary-foreground hover:bg-charcoal"
-                    }`}
-                  >
-                    {redeemed.includes(reward.id)
-                      ? "In bag — remove"
-                      : score.affordable
-                        ? "Add to bag"
-                        : `${score.shortBy.toLocaleString()} pts short`}
-                  </button>
-
-                </motion.article>
+                    onQuickView={() => setQuickId(reward.id)}
+                    onHover={() => setActiveId(reward.id)}
+                  />
+                </motion.div>
               ))}
             </div>
           </motion.section>

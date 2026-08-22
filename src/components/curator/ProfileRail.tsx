@@ -36,7 +36,7 @@ export function ProfileRail({
   shelf: string[];
   onToggleShelf: (id: string) => void;
   gaps: ConcernId[];
-  onQuip?: (line: string) => void;
+  onQuip?: ((line: string) => void) | undefined;
 }) {
   const reduced = useReducedMotion();
 
@@ -150,7 +150,7 @@ function ShelfGroup({
   shelf: string[];
   onToggleShelf: (id: string) => void;
   reduced: boolean;
-  onQuip?: (line: string) => void;
+  onQuip?: ((line: string) => void) | undefined;
 }) {
   const [adding, setAdding] = useState(false);
   const [wobble, setWobble] = useState(0);
@@ -166,7 +166,7 @@ function ShelfGroup({
     clicks.current = [...clicks.current, now].filter((t) => now - t < 1600);
     if (clicks.current.length >= 3) {
       clicks.current = [];
-      onQuip?.(quips[Math.floor(Math.random() * quips.length)]);
+      onQuip?.(quips[Math.floor(Math.random() * quips.length)] ?? quips[0]!);
     }
   };
 

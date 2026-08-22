@@ -33,7 +33,7 @@ const AnswerSchema = z.object({
 function resolveModel() {
   const googleApiKey = process.env["GOOGLE_GENERATIVE_AI_API_KEY"];
   if (googleApiKey) {
-    const modelId = process.env["GEMINI_MODEL"] ?? "gemini-2.5-flash";
+    const modelId = process.env["GEMINI_MODEL"] ?? "gemini-3.6-flash";
     console.info(`[curator] provider=google model=${modelId}`);
     const google = createGoogleGenerativeAI({ apiKey: googleApiKey });
     return google(modelId);

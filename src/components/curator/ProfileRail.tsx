@@ -239,7 +239,7 @@ function ShelfGroup({
         onClick={nudge}
         role="presentation"
       >
-        <div className="shelf-scroll flex min-h-[52px] items-end gap-1 overflow-x-auto overflow-y-visible px-1 pt-16">
+        <div className="shelf-scroll flex min-h-[52px] items-end gap-1 overflow-x-auto px-1 pt-2">
           <AnimatePresence initial={false}>
             {onShelf.map((p) => (
               <motion.div
@@ -250,6 +250,11 @@ function ShelfGroup({
                 exit={reduced ? { opacity: 0 } : { opacity: 0, x: -10, rotate: -25 }}
                 transition={{ type: "spring", stiffness: 420, damping: 18 }}
                 className="group relative shrink-0"
+                onMouseEnter={(e) => openLabel(p.id, e.currentTarget)}
+                onMouseLeave={closeLabel}
+                onFocus={(e) => openLabel(p.id, e.currentTarget)}
+                onBlur={closeLabel}
+                tabIndex={0}
               >
                 <div
                   className={`relative transition-transform duration-200 group-hover:-translate-y-1 ${

@@ -2,7 +2,6 @@ import { NoObjectGeneratedError, Output, streamText, type LanguageModel } from "
 import { z } from "zod";
 
 import type { ConcernId, SkinType } from "@/components/curator/data";
-import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { createLovableAiGatewayProvider } from "./ai-gateway.server";
 import {
   SYSTEM_PROMPT,
@@ -33,17 +32,9 @@ interface Provider {
   model: LanguageModel;
 }
 
-// Tries your own Gemini key first (billed to your Google account), then falls
-// back to the Lovable AI gateway (billed as Lovable credits) if that call fails.
+// Uses the Lovable AI gateway (billed as Lovable credits).
 function resolveProviders(): Provider[] {
   const providers: Provider[] = [];
-
-  const googleApiKey = process.env["GOOGLE_GENERATIVE_AI_API_KEY"];
-  if (googleApiKey) {
-    const modelId = process.env["GEMINI_MODEL"] ?? "gemini-3.6-flash";
-    const google = createGoogleGenerativeAI({ apiKey: googleApiKey });
-    providers.push({ name: `google:${modelId}`, model: google(modelId) });
-  }
 
   const lovableApiKey = process.env["LOVABLE_API_KEY"];
   if (lovableApiKey) {

@@ -1,0 +1,157 @@
+{
+  "version": 1,
+  "sdk_version": "0.26.3",
+  "path": "/mcp",
+  "auth": {
+    "type": "none"
+  },
+  "mcp": {
+    "server": {
+      "name": "beauty-guide",
+      "version": "0.1.0",
+      "title": "Beauty Guide"
+    },
+    "tools": [
+      {
+        "name": "list_rewards",
+        "title": "List rewards",
+        "description": "List the Rewards Boutique catalogue (demo data), optionally filtered by category, points budget or membership tier.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "category": {
+              "description": "Filter by product category.",
+              "type": "string",
+              "enum": [
+                "Skin",
+                "Hair",
+                "Makeup"
+              ]
+            },
+            "maxPoints": {
+              "description": "Only rewards at or below this points cost.",
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            },
+            "tier": {
+              "description": "Filter by the membership tier required.",
+              "type": "string",
+              "enum": [
+                "All members",
+                "Gold & above"
+              ]
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_reward",
+        "title": "Get reward details",
+        "description": "Full detail for one reward: routine placement, key actives, pairings, cautions and redemption terms.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "reward_id": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Reward id, e.g. from list_rewards."
+            }
+          },
+          "required": [
+            "reward_id"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_beauty_profile",
+        "title": "Get demo beauty profile",
+        "description": "The demo member's beauty profile, the shelf she is currently using, her past purchases, and every skin type and concern the scorer understands.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "recommend_rewards",
+        "title": "Recommend rewards",
+        "description": "Score the reward catalogue against a beauty profile and points balance, returning the best-fit picks with the reasoning behind each score. Defaults to the demo member's profile.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "skinType": {
+              "type": "string",
+              "enum": [
+                "Oily",
+                "Combination",
+                "Dry",
+                "Normal"
+              ]
+            },
+            "concerns": {
+              "description": "Concern ids, e.g. hydration, frizz, longwear.",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "shelf": {
+              "description": "Product ids currently in use.",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "enjoys": {
+              "description": "Concern ids she likes to redeem against.",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "points": {
+              "description": "Available points balance.",
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "limit": {
+              "description": "How many picks to return (default 3).",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 12
+            }
+          }
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}

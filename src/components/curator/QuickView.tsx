@@ -139,7 +139,17 @@ export function QuickView({
                 </ul>
               </section>
 
+              {reward.blurb && (
+                <section className="mt-6 border-t border-hairline pt-6">
+                  <p className="text-[10px] tracking-[0.22em] text-muted-foreground uppercase">
+                    Editor's note
+                  </p>
+                  <p className="mt-3 text-[12px] leading-relaxed text-charcoal">{reward.blurb}</p>
+                </section>
+              )}
+
               <section className="mt-6 border-t border-hairline pt-6">
+
                 <p className="text-[10px] tracking-[0.22em] text-muted-foreground uppercase">
                   Key actives
                 </p>

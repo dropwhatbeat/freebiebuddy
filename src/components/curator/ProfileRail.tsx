@@ -201,15 +201,28 @@ function ShelfGroup({
                     wobble && !reduced ? "bottle-jiggle" : ""
                   }`}
                 >
-                  <ProductBottle
-                    id={p.vessel}
-                    className="h-11 w-auto shrink-0 text-charcoal transition-colors group-hover:text-ink"
-                  />
+                  {p.image ? (
+                    <img
+                      src={p.image}
+                      alt={`${p.brand} ${p.name}`}
+                      loading="lazy"
+                      className="h-11 w-9 object-contain object-bottom mix-blend-multiply"
+                    />
+                  ) : (
+                    <ProductBottle
+                      id={p.vessel}
+                      className="h-11 w-auto shrink-0 text-charcoal transition-colors group-hover:text-ink"
+                    />
+                  )}
                 </div>
 
                 {/* hover label + remove */}
                 <div className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-1 w-36 -translate-x-1/2 border border-hairline bg-card px-2 py-1.5 opacity-0 shadow-sm transition-opacity group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100">
+                  <p className="text-[9px] tracking-[0.16em] text-muted-foreground uppercase">
+                    {p.brand}
+                  </p>
                   <p className="text-[11px] leading-tight text-ink">{p.name}</p>
+
                   <button
                     type="button"
                     onClick={(e) => {

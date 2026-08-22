@@ -222,12 +222,10 @@ export function PointCurator({
             <p className="flex items-center gap-2 text-[11px] tracking-[0.28em] text-gold uppercase">
               <MicroSpark /> AI reward recommender
             </p>
-            <h1 className="mt-5 max-w-2xl font-serif text-5xl leading-[1.08]">
+            <h1 className="mt-5 max-w-4xl font-serif text-5xl leading-[1.08] text-balance">
               Explore the best rewards for you
             </h1>
-            <p className="mt-5 max-w-xl text-[15px] leading-relaxed text-charcoal">
-              {`Freebie Buddy read your ${skinType.toLowerCase()} skin, ${shelf.length} products across your skin, hair and makeup shelves and ${selected.length} concerns to rank what your points can get today.`}
-            </p>
+
 
 
             <div className="mt-10 grid gap-8 border-t border-hairline pt-10 lg:grid-cols-[150px_minmax(0,1fr)]">

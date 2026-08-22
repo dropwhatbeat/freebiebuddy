@@ -92,6 +92,9 @@ export function PointCurator({
     onRedeem({ id: r.id, product: r.name, points: r.points });
   };
 
+  const handleRemove = (r: Reward) => onRemove(r.id);
+
+
   const toggleConcern = (c: ConcernId) =>
     setSelected((prev) => (prev.includes(c) ? prev.filter((x) => x !== c) : [...prev, c]));
 

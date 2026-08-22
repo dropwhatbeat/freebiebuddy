@@ -59,9 +59,27 @@ export function PointCurator({
     [scored],
   );
 
-  const topPick = ranked[0];
+  /** Up to three picks: gap-closers first, one per open concern where possible. */
+  const picks = useMemo(() => {
+    const chosen: ScoredReward[] = [];
+    const usedConcerns = new Set<ConcernId>();
+    const usable = ranked.filter((s) => s.score.tier !== "Not for your skin");
+
+    for (const s of usable.filter((x) => x.score.gapsClosed.length)) {
+      if (chosen.length >= 3) break;
+      if (s.score.gapsClosed.some((c) => usedConcerns.has(c))) continue;
+      s.score.gapsClosed.forEach((c) => usedConcerns.add(c));
+      chosen.push(s);
+    }
+    for (const s of usable) {
+      if (chosen.length >= 3) break;
+      if (!chosen.includes(s)) chosen.push(s);
+    }
+    return chosen;
+  }, [ranked]);
+
   const active = activeId ? scored.find((s) => s.reward.id === activeId) : undefined;
-  const shown = active ?? topPick;
+  const shown = active ?? picks[0];
 
   const gapLabels = gaps
     .map((g) => allConcerns.find((c) => c.id === g)?.label ?? g)
@@ -110,15 +128,15 @@ export function PointCurator({
             <h1 className="mt-5 max-w-2xl font-serif text-5xl leading-[1.08]">
               {gaps.length
                 ? `Your points can close ${gaps.length} gap${gaps.length > 1 ? "s" : ""}.`
-                : "Your routine is complete. Here's what to enjoy."}
+                : "Your shelves are complete. Here's what suits you."}
             </h1>
             <p className="mt-5 max-w-xl text-[15px] leading-relaxed text-charcoal">
               {gaps.length
-                ? `The Curator read your ${skinType.toLowerCase()} skin, ${shelf.length} shelf products and ${selected.length} concerns. Nothing you own answers ${gapLabels}.`
-                : `The Curator read your ${skinType.toLowerCase()} skin and ${shelf.length} shelf products. Every concern is covered, so it is ranking on what you actually enjoy.`}
+                ? `The Curator read your ${skinType.toLowerCase()} skin, ${shelf.length} products across your skin, hair and makeup shelves, and ${selected.length} concerns. Nothing you own answers ${gapLabels}.`
+                : `The Curator read your ${skinType.toLowerCase()} skin and ${shelf.length} products across your skin, hair and makeup shelves. Every concern is covered, so it is ranking on skin condition and what you enjoy.`}
             </p>
 
-            <div className="mt-10 grid gap-8 border-y border-hairline py-10 lg:grid-cols-[150px_minmax(0,1fr)_300px]">
+            <div className="mt-10 grid gap-8 border-t border-hairline pt-10 lg:grid-cols-[150px_minmax(0,1fr)]">
               <CompactOrb
                 className="h-[150px] w-[150px]"
                 thinking={Boolean(active)}
@@ -127,27 +145,62 @@ export function PointCurator({
 
               {shown && (
                 <CuratorSpeech
-                  title={
+                  title={active ? `Curator · ${shown.reward.name}` : `Curator · why these picks`}
+                  body={
                     active
-                      ? `Curator · ${shown.reward.name}`
-                      : `Curator · top pick for you`
+                      ? `${shown.score.headline} ${shown.reward.routine}`
+                      : gaps.length
+                        ? `${picks.length} rewards below close what your shelves are missing — ${gapLabels}. Anything that clashes with your skin type or an active you already use is labelled, not recommended.`
+                        : `Nothing is missing, so these ${picks.length} are ranked on ${skinType.toLowerCase()} skin condition and the categories you redeem most.`
                   }
-                  body={`${shown.score.headline} ${shown.reward.routine}`}
-                  caution={shown.reward.caution}
+                  caution={active ? shown.reward.caution : undefined}
                   className="self-start"
                 />
               )}
+            </div>
 
-              {shown && (
-                <div className="self-start border border-hairline bg-card p-6">
-                  <p className="text-[10px] tracking-[0.22em] text-muted-foreground uppercase">
-                    Fit score
+            <div className="mt-10 flex items-end justify-between border-b border-hairline pb-4">
+              <h2 className="font-serif text-2xl">
+                {gaps.length ? "Recommended to close your gaps" : "Best fits for your profile"}
+              </h2>
+              <p className="text-[10px] tracking-[0.2em] text-muted-foreground uppercase">
+                {picks.length} picks
+              </p>
+            </div>
+
+            <div className="grid gap-px bg-hairline sm:grid-cols-2 xl:grid-cols-3">
+              {picks.map(({ reward, score }, i) => (
+                <motion.article
+                  key={reward.id}
+                  initial={reduced ? false : { opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.35, delay: i * 0.08 }}
+                  onMouseEnter={() => setActiveId(reward.id)}
+                  onFocus={() => setActiveId(reward.id)}
+                  tabIndex={0}
+                  className={`flex flex-col bg-card p-6 transition-colors focus-visible:outline-none ${
+                    activeId === reward.id ? "bg-secondary/40" : ""
+                  }`}
+                >
+                  <div className="flex items-start justify-between">
+                    <span className="text-[10px] tracking-[0.2em] text-gold uppercase">
+                      {reward.category}
+                    </span>
+                    <span className="text-[10px] tracking-[0.16em] text-muted-foreground uppercase">
+                      {reward.type}
+                    </span>
+                  </div>
+                  <FitBadge tier={score.tier} segments={score.segments} />
+                  <h3 className="mt-4 font-serif text-xl leading-snug">{reward.name}</h3>
+                  <p className="mt-1 text-[10px] tracking-[0.2em] text-muted-foreground uppercase">
+                    {reward.brand}
                   </p>
-                  <FitBadge tier={shown.score.tier} segments={shown.score.segments} />
-                  <h2 className="mt-5 font-serif text-xl leading-snug">{shown.reward.name}</h2>
-                  <p className="mt-2 font-serif">{shown.reward.points.toLocaleString()} pts</p>
-                  <ul className="mt-5 space-y-2 border-t border-hairline pt-4 text-[12px] leading-relaxed text-muted-foreground">
-                    {shown.score.lines.map((l) => (
+                  <p className="mt-3 font-serif">{reward.points.toLocaleString()} pts</p>
+                  <p className="mt-3 text-[13px] leading-relaxed text-charcoal">
+                    {score.headline}
+                  </p>
+                  <ul className="mt-3 space-y-2 border-t border-hairline pt-3 text-[12px] leading-relaxed text-muted-foreground">
+                    {score.lines.map((l) => (
                       <li key={l.label} className="flex gap-2">
                         <span
                           aria-hidden
@@ -169,24 +222,22 @@ export function PointCurator({
                   </ul>
                   <button
                     type="button"
-                    disabled={
-                      redeemed.includes(shown.reward.id) || !shown.score.affordable
-                    }
-                    onClick={() => handleRedeem(shown.reward)}
-                    className={`mt-6 w-full py-3 text-[10px] tracking-[0.22em] uppercase transition-colors focus-visible:ring-1 focus-visible:ring-gold focus-visible:outline-none ${
-                      redeemed.includes(shown.reward.id) || !shown.score.affordable
-                        ? "border border-hairline text-muted-foreground"
-                        : "bg-ink text-primary-foreground hover:bg-charcoal"
+                    disabled={redeemed.includes(reward.id) || !score.affordable}
+                    onClick={() => handleRedeem(reward)}
+                    className={`mt-auto w-full py-3 text-[10px] tracking-[0.22em] uppercase transition-colors focus-visible:ring-1 focus-visible:ring-gold focus-visible:outline-none ${
+                      redeemed.includes(reward.id) || !score.affordable
+                        ? "mt-6 border border-hairline text-muted-foreground"
+                        : "mt-6 bg-ink text-primary-foreground hover:bg-charcoal"
                     }`}
                   >
-                    {redeemed.includes(shown.reward.id)
+                    {redeemed.includes(reward.id)
                       ? "Claimed"
-                      : shown.score.affordable
+                      : score.affordable
                         ? "Claim reward"
-                        : `${shown.score.shortBy.toLocaleString()} pts short`}
+                        : `${score.shortBy.toLocaleString()} pts short`}
                   </button>
-                </div>
-              )}
+                </motion.article>
+              ))}
             </div>
           </motion.section>
 

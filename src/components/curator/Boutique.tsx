@@ -13,7 +13,7 @@ export interface ScoredReward {
 }
 
 type TypeFilter = "All" | (typeof categories)[number];
-type EligFilter = "All rewards" | "Within my points" | "Gold & above";
+type EligFilter = "All rewards" | "Within my points" | "Gold & Black";
 type FitFilter = "Everything" | "Good and up" | "Best fit only";
 type SortKey = "Best fit first" | "Points: low to high" | "Points: high to low";
 
@@ -46,7 +46,7 @@ export function Boutique({
   const items = useMemo(() => {
     let list = scored.filter(({ reward }) => (type === "All" ? true : reward.category === type));
     if (elig === "Within my points") list = list.filter((s) => s.score.affordable);
-    if (elig === "Gold & above") list = list.filter((s) => s.reward.tier === "Gold & above");
+    if (elig === "Gold & Black") list = list.filter((s) => s.reward.tier === "Gold & Black");
     if (fit === "Best fit only") list = list.filter((s) => s.score.tier === "Best fit");
     if (fit === "Good and up") list = list.filter((s) => s.score.tier !== "Okay fit");
     return [...list].sort((a, b) => {
@@ -78,7 +78,7 @@ export function Boutique({
         <FilterGroup
           label="Eligibility"
           value={elig}
-          options={["All rewards", "Within my points", "Gold & above"]}
+          options={["All rewards", "Within my points", "Gold & Black"]}
           onChange={(v) => setElig(v as EligFilter)}
         />
         <FilterGroup

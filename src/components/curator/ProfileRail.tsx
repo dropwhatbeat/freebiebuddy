@@ -197,7 +197,19 @@ function ShelfGroup({
 }) {
   const [adding, setAdding] = useState(false);
   const [wobble, setWobble] = useState(0);
+  const [hovered, setHovered] = useState<{ id: string; x: number; y: number } | null>(null);
+  const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const clicks = useRef<number[]>([]);
+
+  const openLabel = (id: string, el: HTMLElement) => {
+    if (hoverTimer.current) clearTimeout(hoverTimer.current);
+    const r = el.getBoundingClientRect();
+    setHovered({ id, x: r.left + r.width / 2, y: r.top });
+  };
+  const closeLabel = () => {
+    if (hoverTimer.current) clearTimeout(hoverTimer.current);
+    hoverTimer.current = setTimeout(() => setHovered(null), 120);
+  };
   const items = pastPurchases.filter((p) => p.category === category);
   const onShelf = items.filter((p) => shelf.includes(p.id));
   const notOnShelf = items.filter((p) => !shelf.includes(p.id));

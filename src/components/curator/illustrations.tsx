@@ -1,4 +1,4 @@
-import type { SVGProps } from "react";
+import type { ReactElement, SVGProps } from "react";
 
 const ink = "currentColor";
 
@@ -79,7 +79,7 @@ interface BottleProps {
 
 /** Hand-drawn ink-line skincare vessels. */
 export function ProductBottle({ id, className }: BottleProps & { id: string }) {
-  const shapes: Record<string, JSX.Element> = {
+  const shapes: Record<string, ReactElement> = {
     cleanser: (
       <g>
         <path d="M30 34c-6 1-9 5-9 11v51c0 6 4 10 10 10h28c6 0 10-4 10-10V45c0-6-3-10-9-11" />

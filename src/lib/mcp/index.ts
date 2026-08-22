@@ -11,5 +11,5 @@ export default defineMcp({
   version: "0.1.0",
   instructions:
     "Tools for the Beauty Pass Rewards Boutique prototype. Browse the demo reward catalogue, read the demo member's beauty profile and shelf, and score rewards for fit against a skin/hair/makeup profile. All data is fictional demo data.",
-  tools: [listRewardsTool, getRewardTool, getBeautyProfileTool, recommendRewardsTool],
+  tools: [listRewardsTool, getRewardTool, getBeautyProfileTool, recommendRewardsTool] as AnyToolDefinition[],
 });

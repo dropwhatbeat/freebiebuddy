@@ -406,7 +406,7 @@ export interface Reward {
 }
 
 /** Real Beauty Pass Rewards Boutique catalogue (demo copy of a live redeemables feed). */
-export const rewardCatalogue: Reward[] = [
+const rawRewardCatalogue: Reward[] = [
   {
     id: "pixi-glow-tonic-exfoliating-toner",
     name: "Glow Tonic Exfoliating Toner (15 ml)",

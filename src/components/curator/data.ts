@@ -319,21 +319,64 @@ export const defaultShelf = [
 ];
 
 
+export interface ScanMetric {
+  title: string;
+  value: number;
+  status: "good" | "average" | "low";
+  note: string;
+}
+
+/**
+ * Emily's declared Beauty Profile plus her in-store Skincredible scan.
+ * Declared concerns are the source of truth; the scan is supporting evidence.
+ */
 export const defaultProfile = {
   name: "Emily",
-  skinType: "Combination" as SkinType,
+  skinType: "Normal" as SkinType,
+  hairType: "Thick",
+  hairTexture: "Curly / permed",
+  scalpType: "Dry",
+  fragrance: {
+    type: "Women",
+    families: ["Citrus & fruity", "Floral"],
+  },
   concerns: [
-    "hydration",
-    "barrier",
+    "blackheads",
     "pigmentation",
-    "texture",
+    "lines",
     "frizz",
-    "scalp",
-    "longwear",
-    "lipcare",
+    "dandruff",
+    "hairdryness",
   ] as ConcernId[],
   /** What she redeems most — used when there is no gap to close. */
   enjoys: ["hydration", "coverage"] as ConcernId[],
+  scan: {
+    score: 75,
+    date: "16 Aug 2026",
+    store: "ION Orchard",
+    metrics: [
+      {
+        title: "Hydration",
+        value: 64,
+        status: "average",
+        note: "Your skin is moderately hydrated",
+      },
+      { title: "Lines", value: 74, status: "average", note: "Your skin shows moderate lines" },
+      { title: "Pores", value: 82, status: "good", note: "Your pores are barely detectable" },
+      { title: "Sebum", value: 80, status: "good", note: "Minimal excess surface oil" },
+    ] as ScanMetric[],
+    routineSteps: [
+      "Makeup remover",
+      "Facial cleanser",
+      "Exfoliator",
+      "Toner",
+      "Serum & boosters",
+      "Moisturiser",
+      "Sunscreen",
+      "Masks",
+      "Beauty tools",
+    ],
+  },
 };
 
 export interface Reward {

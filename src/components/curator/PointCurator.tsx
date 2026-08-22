@@ -3,7 +3,7 @@ import { motion, useReducedMotion } from "motion/react";
 import { useMutation } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 
-import { CompactOrb, CuratorSpeech, MicroSpark } from "./CompactOrb";
+import { CompactOrb, MicroSpark } from "./CompactOrb";
 import { BuddyBar } from "./BuddyBar";
 import { ProfileRail } from "./ProfileRail";
 import { Boutique, type ScoredReward } from "./Boutique";
@@ -240,23 +240,16 @@ export function PointCurator({
               />
 
               <div className="self-start">
-                <CuratorSpeech
-                  title={speech.title}
-                  body={speech.body}
-                  caution={speech.caution}
-                />
-
-
-                {result.note && !busy && (
-                  <p className="mt-3 text-[11px] text-muted-foreground">{result.note}</p>
-                )}
-
                 <RecommendationPrompt
                   wish={wish}
                   busy={busy}
                   onSubmit={askWish}
                   onClear={clearWish}
                 />
+
+                {result.note && !busy && (
+                  <p className="mt-3 text-[11px] text-muted-foreground">{result.note}</p>
+                )}
 
                 {shelfDirty && !busy && (
                   <motion.div
@@ -281,14 +274,16 @@ export function PointCurator({
             </div>
           </motion.section>
 
-          <BuddyBar
-            title={speech.title}
-            body={speech.body}
-            caution={speech.caution}
-            thinking={busy || Boolean(active) || Boolean(activePick) || Boolean(quip)}
-            mood={!quip && shown?.score.tier === "Not for your skin" ? "caution" : "calm"}
-            readKey={`${activeId ?? "intro"}-${quip ?? ""}-${busy}`}
-          />
+          <div className="mt-12">
+            <BuddyBar
+              title={speech.title}
+              body={speech.body}
+              caution={speech.caution}
+              thinking={busy || Boolean(active) || Boolean(activePick) || Boolean(quip)}
+              mood={!quip && shown?.score.tier === "Not for your skin" ? "caution" : "calm"}
+              readKey={`${activeId ?? "intro"}-${quip ?? ""}-${busy}`}
+            />
+          </div>
 
           <div className="mt-6 flex items-end justify-between border-b border-hairline pb-4">
             <h2 className="font-serif text-2xl">Top picks</h2>

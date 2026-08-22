@@ -258,8 +258,19 @@ function ShelfGroup({
           >
             {notOnShelf.map((p) => (
               <li key={p.id} className="flex items-center gap-2 border-b border-hairline py-1.5">
-                <ProductBottle id={p.vessel} className="h-6 w-auto shrink-0 text-charcoal" />
-                <span className="min-w-0 flex-1 truncate text-[12px] text-charcoal">{p.name}</span>
+                {p.image ? (
+                  <img
+                    src={p.image}
+                    alt=""
+                    loading="lazy"
+                    className="h-6 w-6 shrink-0 object-contain mix-blend-multiply"
+                  />
+                ) : (
+                  <ProductBottle id={p.vessel} className="h-6 w-auto shrink-0 text-charcoal" />
+                )}
+                <span className="min-w-0 flex-1 truncate text-[12px] text-charcoal">
+                  <span className="text-muted-foreground">{p.brand}</span> {p.name}
+                </span>
                 <button
                   type="button"
                   onClick={() => onToggleShelf(p.id)}

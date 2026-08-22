@@ -35,12 +35,24 @@ export function RewardCard({
       }`}
     >
       <div className="relative flex h-28 items-center justify-center">
-        <RewardVessel
-          variant={reward.vessel}
-          className={`h-14 w-auto transition-transform duration-300 group-hover:-translate-y-0.5 ${
-            dim ? "text-muted-foreground" : "text-ink group-hover:text-gold"
-          }`}
-        />
+        {reward.image ? (
+          <img
+            src={reward.image}
+            alt={`${reward.brand} ${reward.name}`}
+            loading="lazy"
+            className={`h-24 w-auto object-contain transition-transform duration-300 group-hover:-translate-y-0.5 ${
+              dim ? "opacity-50 grayscale" : ""
+            }`}
+          />
+        ) : (
+          <RewardVessel
+            variant={reward.vessel}
+            className={`h-14 w-auto transition-transform duration-300 group-hover:-translate-y-0.5 ${
+              dim ? "text-muted-foreground" : "text-ink group-hover:text-gold"
+            }`}
+          />
+        )}
+
         <button
           type="button"
           onClick={onQuickView}

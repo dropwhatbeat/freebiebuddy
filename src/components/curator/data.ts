@@ -13,13 +13,17 @@ export interface Concern {
 }
 
 export const concerns: Concern[] = [
-  { id: "hydration", label: "Hydration", blurb: "Skin feels tight by mid-afternoon" },
-  { id: "barrier", label: "Barrier & sensitivity", blurb: "Reacts to strong actives and heat" },
+  { id: "hydration", label: "Hydration", blurb: "Tight by mid-afternoon" },
+  { id: "barrier", label: "Barrier & sensitivity", blurb: "Reacts to strong actives" },
   { id: "brightening", label: "Brightening", blurb: "Post-acne marks, uneven tone" },
   { id: "texture", label: "Texture", blurb: "Rough patches around the chin" },
   { id: "pores", label: "Pores & oil", blurb: "Shine through the T-zone" },
   { id: "firmness", label: "Firmness", blurb: "Early loss of bounce" },
 ];
+
+export type SkinType = "Oily" | "Combination" | "Dry" | "Normal";
+
+export const skinTypes: SkinType[] = ["Oily", "Combination", "Dry", "Normal"];
 
 export type Step = "Cleanse" | "Treat" | "Hydrate" | "Protect" | "Weekly";
 
@@ -30,10 +34,11 @@ export interface Product {
   step: Step;
   vessel: "cleanser" | "vitc" | "moisturiser" | "spf" | "mask";
   covers: ConcernId[];
-  /** Genie explanation of how the product sits inside the routine. */
+  /** Where it sits in the routine. */
   routine: string;
-  /** Why the model surfaced or kept it. */
-  why: string;
+  /** Actives the model reasons about when checking conflicts. */
+  actives: string[];
+  purchased: string;
 }
 
 export const pastPurchases: Product[] = [
@@ -44,8 +49,9 @@ export const pastPurchases: Product[] = [
     step: "Cleanse",
     vessel: "cleanser",
     covers: ["barrier"],
-    routine: "Your first step, morning and night. Low-foam, so it leaves the barrier intact.",
-    why: "Kept because it is the only low-pH cleanser on your shelf and pairs safely with actives.",
+    routine: "First step, morning and night. Low-foam, leaves the barrier intact.",
+    actives: [],
+    purchased: "Mar 2026",
   },
   {
     id: "vitc",
@@ -54,8 +60,9 @@ export const pastPurchases: Product[] = [
     step: "Treat",
     vessel: "vitc",
     covers: ["brightening"],
-    routine: "Morning only, on damp skin before moisturiser. Follow with SPF every single day.",
-    why: "This is what is currently doing the work on your post-acne marks.",
+    routine: "Morning only, on damp skin before moisturiser.",
+    actives: ["vitamin c"],
+    purchased: "Feb 2026",
   },
   {
     id: "moisturiser",
@@ -64,8 +71,9 @@ export const pastPurchases: Product[] = [
     step: "Hydrate",
     vessel: "moisturiser",
     covers: ["hydration"],
-    routine: "Seals in your serum. Light gel-cream, so it works in Singapore humidity.",
-    why: "Humectant-led — it draws water in but has little to hold it there overnight.",
+    routine: "Seals in your serum. Light gel-cream for Singapore humidity.",
+    actives: [],
+    purchased: "Apr 2026",
   },
   {
     id: "spf",
@@ -74,8 +82,9 @@ export const pastPurchases: Product[] = [
     step: "Protect",
     vessel: "spf",
     covers: ["brightening"],
-    routine: "Final morning step. Two fingers' worth, reapplied when you are outdoors.",
-    why: "Protects the brightening progress your vitamin C is making.",
+    routine: "Final morning step, reapplied when you are outdoors.",
+    actives: [],
+    purchased: "Apr 2026",
   },
   {
     id: "clay",
@@ -84,8 +93,9 @@ export const pastPurchases: Product[] = [
     step: "Weekly",
     vessel: "mask",
     covers: ["pores"],
-    routine: "Once a week on the T-zone only, never on the drier cheeks.",
-    why: "Targets shine without stripping the rest of the face.",
+    routine: "Once a week on the T-zone only.",
+    actives: ["clay"],
+    purchased: "Jan 2026",
   },
   {
     id: "peptide",
@@ -94,8 +104,9 @@ export const pastPurchases: Product[] = [
     step: "Treat",
     vessel: "vitc",
     covers: ["firmness"],
-    routine: "Evening, after cleansing. Peptides are gentle enough for reactive skin.",
-    why: "A low-irritation route to firmness while your barrier recovers.",
+    routine: "Evening, after cleansing. Gentle enough for reactive skin.",
+    actives: ["peptides"],
+    purchased: "Dec 2025",
   },
   {
     id: "aha",
@@ -105,12 +116,21 @@ export const pastPurchases: Product[] = [
     vessel: "vitc",
     covers: ["texture"],
     routine: "Two evenings a week, never on the same night as retinol.",
-    why: "PHA is the largest acid molecule — the slowest, kindest exfoliant for you.",
+    actives: ["pha", "acid"],
+    purchased: "Nov 2025",
   },
 ];
 
 /** Shelf Michelle starts with. */
 export const defaultShelf = ["cleanser", "vitc", "moisturiser", "spf"];
+
+export const defaultProfile = {
+  name: "Michelle",
+  skinType: "Combination" as SkinType,
+  concerns: ["hydration", "barrier", "brightening", "texture"] as ConcernId[],
+  /** What she redeems most — used when there is no gap to close. */
+  enjoys: ["hydration"] as ConcernId[],
+};
 
 export type RewardType = "Deluxe mini" | "Full size" | "Gift set" | "Experience";
 
@@ -123,11 +143,16 @@ export interface Reward {
   tier: "All members" | "Gold & above";
   covers: ConcernId[];
   vessel: number;
-  /** How the genie frames the fit. */
+  /** Where it would sit in her routine. */
   routine: string;
-  why: string;
-  /** Shelf products this reward sits next to in a routine. */
+  /** Shelf products it layers with. */
   pairsWith: string[];
+  /** Skin types this is a poor match for. */
+  avoidFor?: SkinType[];
+  avoidReason?: string;
+  /** Actives already on the shelf that clash. */
+  conflictsWith?: string[];
+  conflictReason?: string;
   caution?: string;
 }
 
@@ -141,9 +166,10 @@ export const rewardCatalogue: Reward[] = [
     tier: "Gold & above",
     covers: ["barrier", "hydration"],
     vessel: 0,
-    routine: "Last step at night, over your water cream. It is the lid your routine is missing.",
-    why: "Your shelf draws water in but has nothing occlusive to hold it. This closes that gap.",
+    routine: "Last step at night, over your water cream — the lid your routine is missing.",
     pairsWith: ["moisturiser", "cleanser"],
+    avoidFor: ["Oily"],
+    avoidReason: "Rich occlusive texture sits heavy on oily skin.",
   },
   {
     id: "pha",
@@ -154,9 +180,10 @@ export const rewardCatalogue: Reward[] = [
     tier: "All members",
     covers: ["texture", "pores"],
     vessel: 1,
-    routine: "Two nights a week after cleansing, on the nights you skip your vitamin C.",
-    why: "Nothing on your shelf addresses texture, and PHA is the gentlest acid for reactive skin.",
+    routine: "Two nights a week after cleansing, on the nights you skip vitamin C.",
     pairsWith: ["cleanser", "moisturiser"],
+    conflictsWith: ["pha", "acid"],
+    conflictReason: "You already exfoliate with a PHA toner — two would over-exfoliate.",
     caution: "Introduce one night a week first — you flagged sensitivity.",
   },
   {
@@ -169,7 +196,6 @@ export const rewardCatalogue: Reward[] = [
     covers: ["hydration"],
     vessel: 2,
     routine: "A midday top-up over makeup, or pressed in before your water cream.",
-    why: "You redeem hydration rewards most often — this is the low-commitment version.",
     pairsWith: ["moisturiser"],
   },
   {
@@ -182,9 +208,10 @@ export const rewardCatalogue: Reward[] = [
     covers: ["firmness", "texture", "hydration"],
     vessel: 0,
     routine: "A full four-piece PM routine layered after your cleanser.",
-    why: "Uses most of your balance and covers two open concerns at once.",
     pairsWith: ["cleanser", "moisturiser"],
-    caution: "Contains a retinal treatment. Alternate nights, never with the PHA.",
+    conflictsWith: ["pha", "acid"],
+    conflictReason: "Contains retinal — it cannot share a night with your PHA toner.",
+    caution: "Alternate nights, never with an acid.",
   },
   {
     id: "facial",
@@ -196,7 +223,6 @@ export const rewardCatalogue: Reward[] = [
     covers: ["barrier", "brightening"],
     vessel: 1,
     routine: "An in-store read of your barrier before you add anything stronger.",
-    why: "Useful when your concerns and your shelf disagree — a human second opinion.",
     pairsWith: [],
   },
   {
@@ -209,7 +235,6 @@ export const rewardCatalogue: Reward[] = [
     covers: ["pores", "brightening"],
     vessel: 2,
     routine: "Morning, between cleanser and vitamin C. Layers cleanly with both.",
-    why: "Backs up your weekly clay mask with something daily and non-stripping.",
     pairsWith: ["cleanser", "vitc"],
   },
   {
@@ -222,7 +247,6 @@ export const rewardCatalogue: Reward[] = [
     covers: ["brightening"],
     vessel: 1,
     routine: "The handbag size of the SPF already on your shelf, for reapplication.",
-    why: "A repeat of something you already use and finish.",
     pairsWith: ["spf"],
   },
   {
@@ -235,7 +259,59 @@ export const rewardCatalogue: Reward[] = [
     covers: ["hydration"],
     vessel: 0,
     routine: "The very last thing you do at night. No interactions with anything else.",
-    why: "Small, safe, and matches your hydration preference.",
+    pairsWith: [],
+  },
+  {
+    id: "balm",
+    name: "Rich Cocoon Night Balm",
+    brand: "Maison Clair",
+    type: "Full size",
+    points: 1100,
+    tier: "Gold & above",
+    covers: ["hydration", "barrier"],
+    vessel: 0,
+    routine: "A heavy overnight mask-balm for very dry, wind-exposed skin.",
+    pairsWith: ["moisturiser"],
+    avoidFor: ["Oily", "Combination"],
+    avoidReason: "Too occlusive for a shiny T-zone in this climate.",
+  },
+  {
+    id: "retinol",
+    name: "0.3% Retinol Night Serum",
+    brand: "Solane",
+    type: "Full size",
+    points: 1000,
+    tier: "Gold & above",
+    covers: ["firmness", "texture"],
+    vessel: 1,
+    routine: "Two to three nights a week, buffered with moisturiser.",
+    pairsWith: ["moisturiser"],
+    conflictsWith: ["pha", "acid"],
+    conflictReason: "Retinol plus your PHA toner is a lot of turnover for reactive skin.",
+    caution: "Never on the same night as an acid.",
+  },
+  {
+    id: "collagen",
+    name: "Collagen Sculpt Mask Duo",
+    brand: "Atelier Lumen",
+    type: "Gift set",
+    points: 800,
+    tier: "All members",
+    covers: ["firmness", "hydration"],
+    vessel: 2,
+    routine: "A weekly sheet mask on the nights you do nothing active.",
+    pairsWith: ["moisturiser"],
+  },
+  {
+    id: "facialist",
+    name: "Barrier Rescue Facial",
+    brand: "Sephora Studio",
+    type: "Experience",
+    points: 1400,
+    tier: "Gold & above",
+    covers: ["barrier", "hydration"],
+    vessel: 0,
+    routine: "A 60-minute in-store treatment focused on calming reactive skin.",
     pairsWith: [],
   },
 ];

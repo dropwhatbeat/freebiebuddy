@@ -6,9 +6,9 @@ import { SiteHeader } from "@/components/curator/SiteHeader";
 import { PointCurator } from "@/components/curator/PointCurator";
 import { HowItWorks } from "@/components/curator/HowItWorks";
 
-const title = "Point Curator — Sephora Singapore Beauty Pass";
+const title = "Point Curator — AI-scored Beauty Pass rewards";
 const description =
-  "A Beauty Pass prototype: three reward suggestions at different point levels, grounded routine notes, and the full Rewards Boutique always open.";
+  "A Beauty Pass prototype: every Rewards Boutique item scored against your skin profile and shelf, with best-fit, good-fit and not-for-you reasoning.";
 
 export const Route = createFileRoute("/")({
   head: () => ({

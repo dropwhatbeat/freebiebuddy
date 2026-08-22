@@ -3,7 +3,7 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 
 import { RewardVessel } from "./illustrations";
 import { MicroSpark } from "./CompactOrb";
-import { categories, rewardTypes, type Reward } from "./data";
+import { categories, type Reward } from "./data";
 import { tierRank, type FitTier, type Score } from "./scoring";
 
 export interface ScoredReward {
@@ -12,7 +12,6 @@ export interface ScoredReward {
 }
 
 type TypeFilter = "All" | (typeof categories)[number];
-type FormatFilter = "All" | (typeof rewardTypes)[number];
 type EligFilter = "All rewards" | "Within my points" | "Gold & above";
 type FitFilter = "Everything" | "Good and up" | "Best fit only";
 type SortKey = "Best fit first" | "Points: low to high" | "Points: high to low";
@@ -32,14 +31,12 @@ export function Boutique({
 }) {
   const reduced = useReducedMotion();
   const [type, setType] = useState<TypeFilter>("All");
-  const [format, setFormat] = useState<FormatFilter>("All");
   const [elig, setElig] = useState<EligFilter>("All rewards");
   const [fit, setFit] = useState<FitFilter>("Everything");
   const [sort, setSort] = useState<SortKey>("Best fit first");
 
   const items = useMemo(() => {
     let list = scored.filter(({ reward }) => (type === "All" ? true : reward.category === type));
-    if (format !== "All") list = list.filter((s) => s.reward.type === format);
     if (elig === "Within my points") list = list.filter((s) => s.score.affordable);
     if (elig === "Gold & above") list = list.filter((s) => s.reward.tier === "Gold & above");
     if (fit === "Best fit only") list = list.filter((s) => s.score.tier === "Best fit");
@@ -51,7 +48,7 @@ export function Boutique({
         tierRank[a.score.tier] - tierRank[b.score.tier] || a.reward.points - b.reward.points
       );
     });
-  }, [scored, type, format, elig, fit, sort]);
+  }, [scored, type, elig, fit, sort]);
 
   return (
     <section id="boutique" className="mt-16 scroll-mt-24">
@@ -72,12 +69,6 @@ export function Boutique({
           value={type}
           options={["All", ...categories]}
           onChange={(v) => setType(v as TypeFilter)}
-        />
-        <FilterGroup
-          label="Format"
-          value={format}
-          options={["All", ...rewardTypes]}
-          onChange={(v) => setFormat(v as FormatFilter)}
         />
         <FilterGroup
           label="Eligibility"
@@ -133,7 +124,6 @@ export function Boutique({
                   />
                   <span className="text-right text-[10px] tracking-[0.16em] text-muted-foreground uppercase">
                     {reward.category}
-                    <span className="block">{reward.type}</span>
                   </span>
                 </div>
 

@@ -69,7 +69,7 @@ export function RewardCard({
 
       <motion.button
         type="button"
-        whileTap={reduced ? undefined : { scale: 0.985 }}
+        {...(reduced ? {} : { whileTap: { scale: 0.985 } })}
         disabled={!done && !score.affordable}
         onClick={onToggleBag}
         className={`mt-auto w-full py-3 text-[11px] tracking-[0.18em] uppercase transition-colors focus-visible:ring-1 focus-visible:ring-gold focus-visible:outline-none ${

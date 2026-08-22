@@ -616,3 +616,89 @@ export const rewardCatalogue: Reward[] = [
 ];
 
 export const rewardTypes: RewardType[] = ["Deluxe mini", "Full size", "Gift set", "Experience"];
+
+export interface Ingredient {
+  name: string;
+  note: string;
+}
+
+/** Short actives read-out shown in Quick view. */
+export const rewardIngredients: Record<string, Ingredient[]> = {
+  ceramide: [
+    { name: "Ceramide NP", note: "Rebuilds the lipid layer that leaks water overnight." },
+    { name: "Squalane", note: "Softens without a heavy film." },
+    { name: "Panthenol", note: "Calms the flush after actives." },
+  ],
+  pha: [
+    { name: "Gluconolactone (PHA)", note: "Large-molecule acid — resurfaces slowly." },
+    { name: "Allantoin", note: "Buffers the sting on reactive skin." },
+  ],
+  mist: [
+    { name: "Rose water", note: "Instant surface hydration, no residue." },
+    { name: "Glycerin", note: "Holds water in through the afternoon." },
+  ],
+  nightset: [
+    { name: "Retinal", note: "Fast-acting retinoid for texture and bounce." },
+    { name: "Peptide blend", note: "Supports firmness over weeks, not days." },
+    { name: "Shea butter", note: "Buffers the retinal." },
+  ],
+  facial: [{ name: "In-store service", note: "Barrier and hydration read, no product applied." }],
+  niacin: [
+    { name: "Niacinamide 5%", note: "Tightens the look of pores, evens tone." },
+    { name: "Zinc PCA", note: "Takes the edge off T-zone shine." },
+  ],
+  spfmini: [
+    { name: "Mineral-organic filter blend", note: "SPF50 PA++++, no white cast." },
+    { name: "Vitamin E", note: "Antioxidant top-up under makeup." },
+  ],
+  balm: [
+    { name: "Shea + beeswax", note: "Occlusive seal for wind-exposed skin." },
+    { name: "Ceramide complex", note: "Barrier support overnight." },
+  ],
+  retinol: [
+    { name: "Retinol 0.3%", note: "Entry-strength for firmness and texture." },
+    { name: "Bisabolol", note: "Softens the retinisation period." },
+  ],
+  collagen: [
+    { name: "Hydrolysed collagen", note: "Plumps the surface for a day or two." },
+    { name: "Hyaluronic acid", note: "Draws water into the top layers." },
+  ],
+  facialist: [{ name: "In-store treatment", note: "60 minutes of calming, no acids used." }],
+  antifrizz: [
+    { name: "Marula oil", note: "Weighs down the halo without greasiness." },
+    { name: "Film-forming polymer", note: "Blocks humidity from lifting the cuticle." },
+  ],
+  scalpserum: [
+    { name: "Salicylic acid 1%", note: "Lifts flaking at the crown." },
+    { name: "Caffeine", note: "Root lift over time." },
+  ],
+  bondmask: [
+    { name: "Bond-building complex", note: "Re-links bonds broken by colour." },
+    { name: "Amino acids", note: "Fills the mid-lengths." },
+  ],
+  volumemousse: [
+    { name: "Rice starch", note: "Root grip that survives day two." },
+    { name: "Lightweight polymer", note: "Body without crunch." },
+  ],
+  blowout: [{ name: "In-store service", note: "45 minutes of styling, no chemical treatment." }],
+  lipbalm: [
+    { name: "Lanolin", note: "Seals overnight so lips are smooth by morning." },
+    { name: "Vitamin E", note: "Softens flaking edges." },
+  ],
+  primer: [
+    { name: "Grip polymer", note: "Holds base products through humidity." },
+    { name: "Glycerin", note: "Keeps the grip from feeling tacky." },
+  ],
+  concealer: [
+    { name: "Soft-focus powders", note: "Diffuses redness without cake." },
+    { name: "Squalane", note: "Stops it settling into lines." },
+  ],
+  powder: [
+    { name: "Silica", note: "Blurs and mattifies the T-zone." },
+    { name: "Rice powder", note: "Fine mill, no flashback." },
+  ],
+  makeuplesson: [{ name: "In-store session", note: "60 minutes, built on products you own." }],
+};
+
+export const rewardTerms =
+  "While supplies last. Quantities of each reward are limited. Limit of one per customer per transaction. Rewards are valid with Beauty Pass points with a purchase. Non-transferable. Must be a registered Beauty Pass member to redeem. No returns or exchanges.";

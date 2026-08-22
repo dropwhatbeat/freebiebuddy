@@ -92,7 +92,7 @@ export function CompactOrb({
         )}
         <g
           className={`fill-ink ${
-            reduced ? "" : thinking ? "orb-eyes-dart" : "orb-blink"
+            reduced ? "" : thinking ? "orb-think-blink" : "orb-blink"
           }`}
         >
           <circle cx="66" cy="74" r="3" />

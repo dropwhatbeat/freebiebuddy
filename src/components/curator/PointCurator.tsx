@@ -4,6 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 
 import { CompactOrb, CuratorSpeech, MicroSpark } from "./CompactOrb";
+import { BuddyBar } from "./BuddyBar";
 import { ProfileRail } from "./ProfileRail";
 import { Boutique, type ScoredReward } from "./Boutique";
 import { RewardCard } from "./RewardCard";
@@ -164,6 +165,33 @@ export function PointCurator({
       return next;
     });
 
+  /** One read, shared by the hero panel and the sticky companion bar. */
+  const speech = {
+    title: quip
+      ? "Freebie Buddy · ahem"
+      : busy
+        ? "Freebie Buddy · scoring your rewards"
+        : activePick || active
+          ? `Freebie Buddy · ${shown?.reward.name}`
+          : `Freebie Buddy · here's what I suggest for you`,
+    body: quip
+      ? quip
+      : busy
+        ? wish
+          ? `Reading your shelves against “${wish}” — one moment.`
+          : "Scoring every reward against your profile and shelves — one moment."
+        : activePick
+          ? `${activePick.score.headline} ${activePick.aiRoutine}`
+          : active
+            ? `${active.score.headline} ${active.reward.routine}`
+            : result.intro,
+    caution:
+      !quip && !busy
+        ? (activePick?.aiCaution ?? (active ? active.reward.caution : undefined))
+        : undefined,
+  };
+
+
   return (
     <div className="mx-auto max-w-7xl px-8 pt-10 pb-14">
       <div
@@ -213,34 +241,11 @@ export function PointCurator({
 
               <div className="self-start">
                 <CuratorSpeech
-                  title={
-                    quip
-                      ? "Freebie Buddy · ahem"
-                      : busy
-                        ? "Freebie Buddy · scoring your rewards"
-                        : activePick || active
-                          ? `Freebie Buddy · ${shown?.reward.name}`
-                          : `Freebie Buddy · here's what I suggest for you`
-                  }
-                  body={
-                    quip
-                      ? quip
-                      : busy
-                        ? wish
-                          ? `Reading your shelves against “${wish}” — one moment.`
-                          : "Scoring every reward against your profile and shelves — one moment."
-                        : activePick
-                          ? `${activePick.score.headline} ${activePick.aiRoutine}`
-                          : active
-                            ? `${active.score.headline} ${active.reward.routine}`
-                            : result.intro
-                  }
-                  caution={
-                    !quip && !busy
-                      ? (activePick?.aiCaution ?? (active ? active.reward.caution : undefined))
-                      : undefined
-                  }
+                  title={speech.title}
+                  body={speech.body}
+                  caution={speech.caution}
                 />
+
 
                 {result.note && !busy && (
                   <p className="mt-3 text-[11px] text-muted-foreground">{result.note}</p>
@@ -274,57 +279,66 @@ export function PointCurator({
               </div>
 
             </div>
-
-            <div className="mt-10 flex items-end justify-between border-b border-hairline pb-4">
-              <h2 className="font-serif text-2xl">Top picks</h2>
-
-              <p className="text-[10px] tracking-[0.2em] text-muted-foreground uppercase">
-                {busy ? "Scoring…" : `${picks.length} ${picks.length === 1 ? "pick" : "picks"}`}
-              </p>
-            </div>
-
-            <div
-              className={
-                "grid gap-px bg-hairline " +
-                (picks.length === 1
-                  ? "sm:grid-cols-1 xl:grid-cols-2"
-                  : picks.length === 2
-                    ? "sm:grid-cols-2"
-                    : "sm:grid-cols-2 xl:grid-cols-3")
-              }
-            >
-              {busy
-                ? [0, 1, 2].map((i) => (
-                    <div key={i} className="animate-pulse bg-card p-6">
-                      <div className="h-40 w-full bg-hairline" />
-                      <div className="mt-5 h-3 w-1/3 bg-hairline" />
-                      <div className="mt-3 h-4 w-2/3 bg-hairline" />
-                      <div className="mt-6 h-9 w-full bg-hairline" />
-                    </div>
-                  ))
-                : picks.map(({ reward, score }, i) => (
-                    <motion.div
-                      key={reward.id}
-                      initial={reduced ? false : { opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.35, delay: i * 0.08 }}
-                    >
-                      <RewardCard
-                        reward={reward}
-                        score={score}
-                        done={redeemed.includes(reward.id)}
-                        active={activeId === reward.id}
-                        onToggleBag={() =>
-                          redeemed.includes(reward.id) ? handleRemove(reward) : handleRedeem(reward)
-                        }
-                        onQuickView={() => setQuickId(reward.id)}
-                        onHover={() => setActiveId(reward.id)}
-                      />
-                    </motion.div>
-                  ))}
-
-            </div>
           </motion.section>
+
+          <BuddyBar
+            title={speech.title}
+            body={speech.body}
+            caution={speech.caution}
+            thinking={busy || Boolean(active) || Boolean(activePick) || Boolean(quip)}
+            mood={!quip && shown?.score.tier === "Not for your skin" ? "caution" : "calm"}
+            readKey={`${activeId ?? "intro"}-${quip ?? ""}-${busy}`}
+          />
+
+          <div className="mt-6 flex items-end justify-between border-b border-hairline pb-4">
+            <h2 className="font-serif text-2xl">Top picks</h2>
+
+            <p className="text-[10px] tracking-[0.2em] text-muted-foreground uppercase">
+              {busy ? "Scoring…" : `${picks.length} ${picks.length === 1 ? "pick" : "picks"}`}
+            </p>
+          </div>
+
+          <div
+            className={
+              "grid gap-px bg-hairline " +
+              (picks.length === 1
+                ? "sm:grid-cols-1 xl:grid-cols-2"
+                : picks.length === 2
+                  ? "sm:grid-cols-2"
+                  : "sm:grid-cols-2 xl:grid-cols-3")
+            }
+          >
+            {busy
+              ? [0, 1, 2].map((i) => (
+                  <div key={i} className="animate-pulse bg-card p-6">
+                    <div className="h-40 w-full bg-hairline" />
+                    <div className="mt-5 h-3 w-1/3 bg-hairline" />
+                    <div className="mt-3 h-4 w-2/3 bg-hairline" />
+                    <div className="mt-6 h-9 w-full bg-hairline" />
+                  </div>
+                ))
+              : picks.map(({ reward, score }, i) => (
+                  <motion.div
+                    key={reward.id}
+                    initial={reduced ? false : { opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.35, delay: i * 0.08 }}
+                  >
+                    <RewardCard
+                      reward={reward}
+                      score={score}
+                      done={redeemed.includes(reward.id)}
+                      active={activeId === reward.id}
+                      onToggleBag={() =>
+                        redeemed.includes(reward.id) ? handleRemove(reward) : handleRedeem(reward)
+                      }
+                      onQuickView={() => setQuickId(reward.id)}
+                      onHover={() => setActiveId(reward.id)}
+                      onLeave={() => setActiveId(null)}
+                    />
+                  </motion.div>
+                ))}
+          </div>
 
           <Boutique
             scored={scored}
@@ -332,9 +346,11 @@ export function PointCurator({
             onRedeem={handleRedeem}
             onRemove={handleRemove}
             onExplain={(r) => setActiveId(r.id)}
+            onClearExplain={() => setActiveId(null)}
             onQuickView={(r) => setQuickId(r.id)}
             activeId={activeId}
           />
+
 
         </div>
       </div>

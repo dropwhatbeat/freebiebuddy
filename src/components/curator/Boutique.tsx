@@ -23,6 +23,7 @@ export function Boutique({
   onRedeem,
   onRemove,
   onExplain,
+  onClearExplain,
   onQuickView,
   activeId,
 }: {
@@ -31,9 +32,11 @@ export function Boutique({
   onRedeem: (r: Reward) => void;
   onRemove: (r: Reward) => void;
   onExplain: (r: Reward) => void;
+  onClearExplain: () => void;
   onQuickView: (r: Reward) => void;
   activeId: string | null;
 }) {
+
   const reduced = useReducedMotion();
   const [type, setType] = useState<TypeFilter>("All");
   const [elig, setElig] = useState<EligFilter>("All rewards");
@@ -120,7 +123,9 @@ export function Boutique({
                   onToggleBag={() => (done ? onRemove(reward) : onRedeem(reward))}
                   onQuickView={() => onQuickView(reward)}
                   onHover={() => onExplain(reward)}
+                  onLeave={onClearExplain}
                 />
+
               </motion.div>
             );
           })}

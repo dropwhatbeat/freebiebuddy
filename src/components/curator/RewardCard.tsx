@@ -1,6 +1,7 @@
 import { motion, useReducedMotion } from "motion/react";
 
 import { RewardVessel } from "./illustrations";
+import { BuddyMark } from "./CompactOrb";
 import { FitBadge } from "./FitBadge";
 import type { Reward } from "./data";
 import type { Score } from "./scoring";
@@ -13,6 +14,7 @@ export function RewardCard({
   onToggleBag,
   onQuickView,
   onHover,
+  onLeave,
 }: {
   reward: Reward;
   score: Score;
@@ -21,6 +23,7 @@ export function RewardCard({
   onToggleBag: () => void;
   onQuickView: () => void;
   onHover: () => void;
+  onLeave?: () => void;
 }) {
   const reduced = useReducedMotion();
   const dim = score.tier === "Not for your skin";
@@ -28,12 +31,15 @@ export function RewardCard({
   return (
     <article
       onMouseEnter={onHover}
+      onMouseLeave={onLeave}
       onFocus={onHover}
+      onBlur={onLeave}
       tabIndex={0}
       className={`group flex h-full flex-col bg-card p-6 transition-colors focus-visible:outline-none ${
         active ? "bg-secondary/40" : ""
       }`}
     >
+
       <div className="relative flex h-28 items-center justify-center">
         {reward.image ? (
           <img
@@ -75,9 +81,11 @@ export function RewardCard({
       </h3>
       <p className="mt-1 font-serif">{reward.points.toLocaleString()} pts</p>
 
-      <p className="mt-3 line-clamp-2 min-h-[2.5rem] text-[12px] leading-relaxed text-charcoal">
-        {score.headline}
-      </p>
+      <div className="mt-3 flex min-h-[2.5rem] gap-2">
+        <BuddyMark className="mt-[3px] h-3.5 w-3.5" />
+        <p className="line-clamp-2 text-[12px] leading-relaxed text-charcoal">{score.headline}</p>
+      </div>
+
 
       <motion.button
         type="button"

@@ -25,6 +25,8 @@ export function PointsBanner({
   const reduced = useReducedMotion();
   const [openList, setOpenList] = useState(false);
   const display = useCountUp(points, reduced ?? false);
+  const displayExpiring = useCountUp(expiring, reduced ?? false);
+
 
   return (
     <motion.section

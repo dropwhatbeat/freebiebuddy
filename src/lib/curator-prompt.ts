@@ -2,6 +2,7 @@ import {
   concerns as allConcerns,
   pastPurchases,
   rewardCatalogue,
+  rewardIngredients,
   type ConcernId,
   type SkinType,
 } from "@/components/curator/data";

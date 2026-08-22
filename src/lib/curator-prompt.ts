@@ -114,12 +114,21 @@ export function buildBrief(input: RecommendRequest) {
     .join("\n");
 
   return [
-    `MEMBER PROFILE`,
+    `MEMBER PROFILE (declared in her Beauty Profile — source of truth)`,
     `Skin type: ${input.skinType}`,
+    `Hair: ${defaultProfile.hairType}, ${defaultProfile.hairTexture}, ${defaultProfile.scalpType} scalp`,
+    `Fragrance preference: ${defaultProfile.fragrance.type} — ${defaultProfile.fragrance.families.join(", ")}`,
     `Concerns: ${input.concerns.map(label).join(", ")}`,
     `Enjoys redeeming for: ${input.enjoys.map(label).join(", ")}`,
     `Points available: ${input.points}`,
     `Concerns her current shelves do NOT answer: ${gaps.length ? gaps.map(label).join(", ") : "none — every stated concern is covered"}`,
+    ``,
+    `SKINCREDIBLE SCAN (measured in store, ${defaultProfile.scan.date} at ${defaultProfile.scan.store}) — supporting evidence only`,
+    `Overall skin score: ${defaultProfile.scan.score}/100`,
+    ...defaultProfile.scan.metrics.map(
+      (m) => `- ${m.title}: ${m.value}/100 (${m.status}) — ${m.note}`,
+    ),
+    `Routine steps she already follows: ${defaultProfile.scan.routineSteps.join(", ")}`,
     ``,
     `CURRENT SHELF (what she is using now)`,
     shelfLines || "- (empty shelf)",

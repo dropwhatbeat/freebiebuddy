@@ -1,4 +1,4 @@
-import { NoObjectGeneratedError, Output, streamText } from "ai";
+import { NoObjectGeneratedError, Output, streamText, type LanguageModel } from "ai";
 import { z } from "zod";
 
 import type { ConcernId, SkinType } from "@/components/curator/data";
@@ -28,27 +28,35 @@ const AnswerSchema = z.object({
   picks: z.array(PickSchema),
 });
 
-// Prefers your own Gemini key (billed to your Google account). Falls back to the
-// Lovable AI gateway, which bills the workspace's Lovable credits instead.
-function resolveModel() {
+interface Provider {
+  name: string;
+  model: LanguageModel;
+}
+
+// Tries your own Gemini key first (billed to your Google account), then falls
+// back to the Lovable AI gateway (billed as Lovable credits) if that call fails.
+function resolveProviders(): Provider[] {
+  const providers: Provider[] = [];
+
   const googleApiKey = process.env["GOOGLE_GENERATIVE_AI_API_KEY"];
   if (googleApiKey) {
     const modelId = process.env["GEMINI_MODEL"] ?? "gemini-3.6-flash";
-    console.info(`[curator] provider=google model=${modelId}`);
     const google = createGoogleGenerativeAI({ apiKey: googleApiKey });
-    return google(modelId);
+    providers.push({ name: `google:${modelId}`, model: google(modelId) });
   }
 
   const lovableApiKey = process.env["LOVABLE_API_KEY"];
   if (lovableApiKey) {
-    console.info("[curator] provider=lovable-gateway (billing Lovable credits)");
     const gateway = createLovableAiGatewayProvider(lovableApiKey, undefined, {
       structuredOutputs: true,
     });
-    return gateway("google/gemini-3.7-flash");
+    providers.push({
+      name: "lovable-gateway:google/gemini-3.7-flash",
+      model: gateway("google/gemini-3.7-flash"),
+    });
   }
 
-  return null;
+  return providers;
 }
 
 interface RawInput {
@@ -77,53 +85,65 @@ export async function recommendRewardsWithAi(raw: RawInput): Promise<RecommendRe
     ...(note ? { note } : {}),
   });
 
-  const model = resolveModel();
-  if (!model) {
+  const providers = resolveProviders();
+  if (!providers.length) {
     console.warn("[curator] no AI key configured — using rule-based picks");
     return fallback("AI scoring is unavailable right now — showing rule-based picks.");
   }
 
-  try {
-    const result = streamText({
-      model,
-      system: SYSTEM_PROMPT,
-      prompt: buildBrief(input),
-      output: Output.object({ schema: AnswerSchema }),
-    });
+  const hasWish = Boolean(input.wish?.trim());
+  const maxPicks = hasWish ? 6 : 3;
+  let lastError: unknown = null;
 
-    const answer = await result.output;
+  for (const [index, provider] of providers.entries()) {
+    const isLast = index === providers.length - 1;
+    try {
+      console.info(`[curator] provider=${provider.name}`);
 
-    const hasWish = Boolean(input.wish?.trim());
-    const maxPicks = hasWish ? 6 : 3;
+      const result = streamText({
+        model: provider.model,
+        system: SYSTEM_PROMPT,
+        prompt: buildBrief(input),
+        output: Output.object({ schema: AnswerSchema }),
+      });
 
-    const picks: AiPick[] = answer.picks
-      .filter((p) => validRewardIds.has(p.rewardId))
-      .filter((p, i, arr) => arr.findIndex((x) => x.rewardId === p.rewardId) === i)
-      .slice(0, maxPicks);
+      const answer = await result.output;
 
-    if (!picks.length) return fallback();
+      const picks: AiPick[] = answer.picks
+        .filter((p) => validRewardIds.has(p.rewardId))
+        .filter((p, i, arr) => arr.findIndex((x) => x.rewardId === p.rewardId) === i)
+        .slice(0, maxPicks);
 
-    // No typed request: always present exactly 3 picks, topped up from rule ranking.
-    if (!hasWish && picks.length < 3) {
-      for (const extra of rulePicks(input, 6)) {
-        if (picks.length >= 3) break;
-        if (picks.some((p) => p.rewardId === extra.rewardId)) continue;
-        picks.push(extra);
+      if (!picks.length) return fallback();
+
+      // No typed request: always present exactly 3 picks, topped up from rule ranking.
+      if (!hasWish && picks.length < 3) {
+        for (const extra of rulePicks(input, 6)) {
+          if (picks.length >= 3) break;
+          if (picks.some((p) => p.rewardId === extra.rewardId)) continue;
+          picks.push(extra);
+        }
+      }
+
+      return { picks, intro: answer.intro, source: "ai" };
+    } catch (error) {
+      if (NoObjectGeneratedError.isInstance(error)) return fallback();
+
+      lastError = error;
+      const message = error instanceof Error ? error.message : "";
+      console.error(`[curator] ${provider.name} failed:`, message);
+      if (!isLast) {
+        console.warn(`[curator] falling back to ${providers[index + 1]?.name}`);
       }
     }
-
-    return { picks, intro: answer.intro, source: "ai" };
-  } catch (error) {
-    if (NoObjectGeneratedError.isInstance(error)) return fallback();
-
-    const message = error instanceof Error ? error.message : "";
-    console.error("[curator] AI call failed:", message);
-    if (message.includes("402")) {
-      return fallback("AI credits are exhausted — showing rule-based picks.");
-    }
-    if (message.includes("429")) {
-      return fallback("Freebie Buddy is rate limited — showing rule-based picks.");
-    }
-    return fallback("Freebie Buddy couldn't reach the AI just now — showing rule-based picks.");
   }
+
+  const message = lastError instanceof Error ? lastError.message : "";
+  if (message.includes("402")) {
+    return fallback("AI credits are exhausted — showing rule-based picks.");
+  }
+  if (message.includes("429")) {
+    return fallback("Freebie Buddy is rate limited — showing rule-based picks.");
+  }
+  return fallback("Freebie Buddy couldn't reach the AI just now — showing rule-based picks.");
 }

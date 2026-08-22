@@ -240,23 +240,16 @@ export function PointCurator({
               />
 
               <div className="self-start">
-                <CuratorSpeech
-                  title={speech.title}
-                  body={speech.body}
-                  caution={speech.caution}
-                />
-
-
-                {result.note && !busy && (
-                  <p className="mt-3 text-[11px] text-muted-foreground">{result.note}</p>
-                )}
-
                 <RecommendationPrompt
                   wish={wish}
                   busy={busy}
                   onSubmit={askWish}
                   onClear={clearWish}
                 />
+
+                {result.note && !busy && (
+                  <p className="mt-3 text-[11px] text-muted-foreground">{result.note}</p>
+                )}
 
                 {shelfDirty && !busy && (
                   <motion.div

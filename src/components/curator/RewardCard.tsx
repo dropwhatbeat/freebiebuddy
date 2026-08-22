@@ -81,9 +81,11 @@ export function RewardCard({
       </h3>
       <p className="mt-1 font-serif">{reward.points.toLocaleString()} pts</p>
 
-      <p className="mt-3 line-clamp-2 min-h-[2.5rem] text-[12px] leading-relaxed text-charcoal">
-        {score.headline}
-      </p>
+      <div className="mt-3 flex min-h-[2.5rem] gap-2">
+        <BuddyMark className="mt-[3px] h-3.5 w-3.5" />
+        <p className="line-clamp-2 text-[12px] leading-relaxed text-charcoal">{score.headline}</p>
+      </div>
+
 
       <motion.button
         type="button"

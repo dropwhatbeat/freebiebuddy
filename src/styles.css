@@ -162,22 +162,18 @@
   }
 }
 
-@keyframes serum-pulse {
-  0%, 100% { transform: scaleY(0.5); }
-  50% { transform: scaleY(1); }
+@keyframes orb-spin { to { transform: rotate(360deg); } }
+@keyframes orb-spin-rev { to { transform: rotate(-360deg); } }
+@keyframes orb-blink { 0%, 88%, 100% { transform: scaleY(1); } 92% { transform: scaleY(0.1); } }
+@keyframes orb-sweep { 0% { transform: translateX(0) rotate(18deg); } 100% { transform: translateX(320px) rotate(18deg); } }
+@keyframes orb-scan { 0% { opacity: 0.6; transform: scale(0.85); } 100% { opacity: 0; transform: scale(1.15); } }
+
+.orb-spin { transform-origin: 80px 80px; animation: orb-spin 26s linear infinite; }
+.orb-spin-rev { transform-origin: 80px 80px; animation: orb-spin-rev 34s linear infinite; }
+.orb-blink { transform-origin: 80px 74px; animation: orb-blink 6s ease-in-out infinite; }
+.orb-sweep { animation: orb-sweep 7s ease-in-out infinite; }
+.orb-scan { transform-origin: 80px 80px; animation: orb-scan 1.8s ease-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .orb-spin, .orb-spin-rev, .orb-blink, .orb-sweep, .orb-scan { animation: none; }
 }
-
-.serum-pulse {
-  transform-origin: 70px 160px;
-  animation: serum-pulse 4.5s ease-in-out infinite;
-}
-
-@keyframes orbit-spin { to { transform: rotate(360deg); } }
-@keyframes orbit-spin-rev { to { transform: rotate(-360deg); } }
-@keyframes blink { 0%, 86%, 100% { transform: scaleY(1); } 90% { transform: scaleY(0.1); } }
-@keyframes droplet { 0%, 100% { transform: translateY(0); opacity: 1; } 50% { transform: translateY(5px); opacity: 0.55; } }
-
-.orbit-slow { transform-origin: 70px 70px; animation: orbit-spin 18s linear infinite; }
-.orbit-reverse { transform-origin: 70px 70px; animation: orbit-spin-rev 26s linear infinite; }
-.blink { transform-origin: 70px 46px; animation: blink 5s ease-in-out infinite; }
-.droplet { animation: droplet 2.6s ease-in-out infinite; }

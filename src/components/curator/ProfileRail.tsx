@@ -8,6 +8,7 @@ import { MicroSpark } from "./CompactOrb";
 import {
   categories,
   concerns,
+  defaultProfile,
   pastPurchases,
   type Category,
   type ConcernId,

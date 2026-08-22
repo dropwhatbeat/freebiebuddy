@@ -25,6 +25,8 @@ export function PointsBanner({
   const reduced = useReducedMotion();
   const [openList, setOpenList] = useState(false);
   const display = useCountUp(points, reduced ?? false);
+  const displayExpiring = useCountUp(expiring, reduced ?? false);
+
 
   return (
     <motion.section
@@ -67,15 +69,16 @@ export function PointsBanner({
 
               <div>
                 <p className="font-serif text-5xl leading-none text-gold tabular-nums">
-                  {expiring.toLocaleString()}
+                  {displayExpiring.toLocaleString()}
                 </p>
                 <p className="mt-3 text-[11px] tracking-[0.2em] text-charcoal uppercase">
                   Points expiring
                 </p>
                 <p className="text-[11px] tracking-[0.16em] text-muted-foreground uppercase">
-                  On {expiryDate}
+                  {expiring === 0 ? "All expiring points used" : `On ${expiryDate}`}
                 </p>
               </div>
+
             </div>
 
             <div className="mt-8 flex flex-wrap items-center gap-8">

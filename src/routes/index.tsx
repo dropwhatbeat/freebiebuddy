@@ -26,8 +26,12 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   const balance = 1240;
+  const expiringTotal = 320;
   const [bag, setBag] = useState<RedeemedEntry[]>([]);
-  const available = balance - bag.reduce((sum, r) => sum + r.points, 0);
+  const held = bag.reduce((sum, r) => sum + r.points, 0);
+  const available = balance - held;
+  const expiringLeft = Math.max(0, expiringTotal - held);
+
 
   const handleRedeem = ({
     id,
@@ -40,9 +44,11 @@ function Index() {
   }) => {
     if (cost > available || bag.some((r) => r.id === id)) return;
     setBag((prev) => [...prev, { id, name: product, points: cost }]);
+    const fromExpiring = Math.min(cost, expiringLeft);
     toast(`${product} added to your bag.`, {
-      description: `${cost.toLocaleString()} points held. ${(available - cost).toLocaleString()} points still available.`,
+      description: `${cost.toLocaleString()} points held${fromExpiring ? ` — ${fromExpiring.toLocaleString()} from your expiring balance` : ""}. ${(available - cost).toLocaleString()} points still available.`,
     });
+
   };
 
   const handleRemove = (id: string) => {
@@ -61,7 +67,7 @@ function Index() {
       <main>
         <PointsBanner
           points={available}
-          expiring={320}
+          expiring={expiringLeft}
           expiryDate="31 Aug 2027"
           redeemed={bag}
           onRemove={handleRemove}

@@ -26,7 +26,7 @@ export function CompactOrb({
         fill="none"
         className="h-full w-full"
         role="img"
-        aria-label="The Curator: an illustrated compact mirror that reads your skin profile"
+        aria-label="Freebie Buddy: an illustrated compact mirror that reads your skin profile"
       >
         <defs>
           <clipPath id="orb-mirror">
@@ -107,7 +107,7 @@ export function CompactOrb({
   );
 }
 
-/** Editorial panel the Curator speaks through. */
+/** Editorial panel Freebie Buddy speaks through. */
 export function CuratorSpeech({
   title,
   body,

@@ -2,6 +2,7 @@ import { NoObjectGeneratedError, Output, streamText } from "ai";
 import { z } from "zod";
 
 import type { ConcernId, SkinType } from "@/components/curator/data";
+import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { createLovableAiGatewayProvider } from "./ai-gateway.server";
 import {
   SYSTEM_PROMPT,
@@ -26,6 +27,29 @@ const AnswerSchema = z.object({
   intro: z.string(),
   picks: z.array(PickSchema),
 });
+
+// Prefers your own Gemini key (billed to your Google account). Falls back to the
+// Lovable AI gateway, which bills the workspace's Lovable credits instead.
+function resolveModel() {
+  const googleApiKey = process.env["GOOGLE_GENERATIVE_AI_API_KEY"];
+  if (googleApiKey) {
+    const modelId = process.env["GEMINI_MODEL"] ?? "gemini-2.5-flash";
+    console.info(`[curator] provider=google model=${modelId}`);
+    const google = createGoogleGenerativeAI({ apiKey: googleApiKey });
+    return google(modelId);
+  }
+
+  const lovableApiKey = process.env["LOVABLE_API_KEY"];
+  if (lovableApiKey) {
+    console.info("[curator] provider=lovable-gateway (billing Lovable credits)");
+    const gateway = createLovableAiGatewayProvider(lovableApiKey, undefined, {
+      structuredOutputs: true,
+    });
+    return gateway("google/gemini-3.7-flash");
+  }
+
+  return null;
+}
 
 interface RawInput {
   skinType: SkinType;
@@ -53,14 +77,15 @@ export async function recommendRewardsWithAi(raw: RawInput): Promise<RecommendRe
     ...(note ? { note } : {}),
   });
 
-  const apiKey = process.env["LOVABLE_API_KEY"];
-  if (!apiKey) return fallback("AI scoring is unavailable right now — showing rule-based picks.");
-
-  const gateway = createLovableAiGatewayProvider(apiKey, undefined, { structuredOutputs: true });
+  const model = resolveModel();
+  if (!model) {
+    console.warn("[curator] no AI key configured — using rule-based picks");
+    return fallback("AI scoring is unavailable right now — showing rule-based picks.");
+  }
 
   try {
     const result = streamText({
-      model: gateway("google/gemini-3.7-flash"),
+      model,
       system: SYSTEM_PROMPT,
       prompt: buildBrief(input),
       output: Output.object({ schema: AnswerSchema }),
@@ -92,6 +117,7 @@ export async function recommendRewardsWithAi(raw: RawInput): Promise<RecommendRe
     if (NoObjectGeneratedError.isInstance(error)) return fallback();
 
     const message = error instanceof Error ? error.message : "";
+    console.error("[curator] AI call failed:", message);
     if (message.includes("402")) {
       return fallback("AI credits are exhausted — showing rule-based picks.");
     }

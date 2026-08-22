@@ -26,7 +26,7 @@ export function RewardCard({
   onLeave?: () => void;
 }) {
   const reduced = useReducedMotion();
-  const dim = score.tier === "Not for your skin";
+  const dim = false;
 
   return (
     <article

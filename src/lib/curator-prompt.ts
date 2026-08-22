@@ -19,7 +19,7 @@ export interface RecommendRequest {
 
 export interface AiPick {
   rewardId: string;
-  tier: "Best fit" | "Good fit" | "Not for your skin";
+  tier: "Best fit" | "Good fit" | "Okay fit";
   reason: string;
   routine: string;
   caution?: string | null;
@@ -50,7 +50,7 @@ export function buildEvidence(input: RecommendRequest) {
       (a, b) =>
         tierRank[a.score.tier] - tierRank[b.score.tier] ||
         Number(b.score.affordable) - Number(a.score.affordable) ||
-        b.score.gapsClosed.length - a.score.gapsClosed.length ||
+        b.score.matchedConcerns.length - a.score.matchedConcerns.length ||
         a.reward.points - b.reward.points,
     );
 
@@ -151,7 +151,7 @@ How many picks:
 Rules:
 - Choose ONLY reward ids that appear in the catalogue (detailed or summary list).
 - Prefer rewards that close a concern her current shelf does not answer; if nothing is missing, pick on skin type and the categories she enjoys.
-- Prefer rewards she can afford with her points. Never recommend one that clashes with her skin type or an active on her shelf unless she explicitly asked for it — and then label it "Not for your skin".
+- Prefer rewards she can afford with her points. Never recommend one that clashes with her skin type or an active on her shelf unless she explicitly asked for it — and then label it "Okay fit".
 - Use the supplied product details (editor's note, key actives, routine placement, cautions) and rule-scored facts as ground truth. Do not invent ingredients, conflicts, or claims.
 - reason: two or three short sentences, personal and specific. Every reason MUST name at least one concrete detail — a named active or ingredient, a product already on her shelf, or her typed request.
 - routine: one short sentence on where it slots into her routine, grounded in the product's routine placement.
@@ -163,7 +163,7 @@ export function rulePicks(input: RecommendRequest, limit = 3): AiPick[] {
   const { scored } = buildEvidence(input);
   const chosen: AiPick[] = [];
   const used = new Set<ConcernId>();
-  const usable = scored.filter((s) => s.score.tier !== "Not for your skin");
+  const usable = scored;
 
   const push = (s: (typeof scored)[number]) => {
     chosen.push({
@@ -175,10 +175,10 @@ export function rulePicks(input: RecommendRequest, limit = 3): AiPick[] {
     });
   };
 
-  for (const s of usable.filter((x) => x.score.gapsClosed.length)) {
+  for (const s of usable.filter((x) => x.score.matchedConcerns.length)) {
     if (chosen.length >= limit) break;
-    if (s.score.gapsClosed.some((c) => used.has(c))) continue;
-    s.score.gapsClosed.forEach((c) => used.add(c));
+    if (s.score.matchedConcerns.some((c) => used.has(c))) continue;
+    s.score.matchedConcerns.forEach((c) => used.add(c));
     push(s);
   }
   for (const s of usable) {

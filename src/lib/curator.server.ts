@@ -16,7 +16,7 @@ import {
 
 const PickSchema = z.object({
   rewardId: z.string(),
-  tier: z.enum(["Best fit", "Good fit", "Not for your skin"]),
+  tier: z.enum(["Best fit", "Good fit", "Okay fit"]),
   reason: z.string(),
   routine: z.string(),
   caution: z.string().nullable(),

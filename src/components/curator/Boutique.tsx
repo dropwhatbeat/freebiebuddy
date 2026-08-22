@@ -48,7 +48,7 @@ export function Boutique({
     if (elig === "Within my points") list = list.filter((s) => s.score.affordable);
     if (elig === "Gold & above") list = list.filter((s) => s.reward.tier === "Gold & above");
     if (fit === "Best fit only") list = list.filter((s) => s.score.tier === "Best fit");
-    if (fit === "Good and up") list = list.filter((s) => s.score.tier !== "Not for your skin");
+    if (fit === "Good and up") list = list.filter((s) => s.score.tier !== "Okay fit");
     return [...list].sort((a, b) => {
       if (sort === "Points: low to high") return a.reward.points - b.reward.points;
       if (sort === "Points: high to low") return b.reward.points - a.reward.points;

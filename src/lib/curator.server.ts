@@ -56,7 +56,7 @@ export async function recommendRewardsWithAi(raw: RawInput): Promise<RecommendRe
   const apiKey = process.env["LOVABLE_API_KEY"];
   if (!apiKey) return fallback("AI scoring is unavailable right now — showing rule-based picks.");
 
-  const gateway = createLovableAiGatewayProvider(apiKey);
+  const gateway = createLovableAiGatewayProvider(apiKey, undefined, { structuredOutputs: true });
 
   try {
     const result = streamText({

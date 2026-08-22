@@ -98,9 +98,6 @@ export function PointCurator({
   const handleRemove = (r: Reward) => onRemove(r.id);
 
 
-  const toggleConcern = (c: ConcernId) =>
-    setSelected((prev) => (prev.includes(c) ? prev.filter((x) => x !== c) : [...prev, c]));
-
   const toggleShelf = (id: string) =>
     setShelf((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
 
@@ -113,13 +110,16 @@ export function PointCurator({
           open={railOpen}
           onToggle={() => setRailOpen((o) => !o)}
           skinType={skinType}
-          onSkinType={setSkinType}
           selected={selected}
-          onToggleConcern={toggleConcern}
           shelf={shelf}
           onToggleShelf={toggleShelf}
           gaps={gaps}
+          onQuip={(line) => {
+            setQuip(line);
+            window.setTimeout(() => setQuip(null), 5000);
+          }}
         />
+
 
         <div className="min-w-0">
           {/* Hero */}

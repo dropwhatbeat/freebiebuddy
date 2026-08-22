@@ -28,7 +28,7 @@ export function BuddyBar({
 
   return (
     <div className={"sticky top-4 z-20 -mx-1 px-1 " + (className ?? "")}>
-      <div className="flex items-start gap-4 border border-gold/50 bg-gold/8 px-4 py-3 backdrop-blur-md">
+      <div className="flex items-start gap-4 border border-gold bg-card px-4 py-3 shadow-[0_8px_24px_-12px_rgba(0,0,0,0.35)]">
         <CompactOrb className="h-11 w-11 shrink-0" thinking={thinking} mood={mood} />
 
         <div className="min-w-0 flex-1">

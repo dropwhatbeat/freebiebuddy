@@ -1,7 +1,7 @@
 import { motion, useReducedMotion } from "motion/react";
 
 import { RewardVessel } from "./illustrations";
-import { BuddyMark } from "./CompactOrb";
+
 import { FitBadge } from "./FitBadge";
 import type { Reward } from "./data";
 import type { Score } from "./scoring";
@@ -81,10 +81,9 @@ export function RewardCard({
       </h3>
       <p className="mt-1 font-serif">{reward.points.toLocaleString()} pts</p>
 
-      <div className="mt-3 flex min-h-[2.5rem] gap-2">
-        <BuddyMark className="mt-[3px] h-3.5 w-3.5" />
-        <p className="line-clamp-2 text-[12px] leading-relaxed text-charcoal">{score.headline}</p>
-      </div>
+      <div className="mt-3" />
+
+
 
 
       <motion.button

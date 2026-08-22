@@ -63,13 +63,10 @@ export function Boutique({
       <div className="flex flex-wrap items-end justify-between gap-4 border-b border-hairline pb-5">
         <div>
           <p className="text-[11px] tracking-[0.28em] text-gold uppercase">Rewards boutique</p>
-          <h2 className="mt-3 font-serif text-3xl">Everything your points can reach.</h2>
+          <h2 className="mt-3 font-serif text-3xl">Full rewards catalogue</h2>
         </div>
-        <p className="max-w-sm text-[13px] leading-relaxed text-muted-foreground">
-          Every reward is scored against your profile and shelves. Nothing is hidden — poor
-          matches are labelled, not removed.
-        </p>
       </div>
+
 
       <div className="flex flex-wrap items-center gap-x-8 gap-y-5 border-b border-hairline py-5">
         <FilterGroup

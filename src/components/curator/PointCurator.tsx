@@ -400,13 +400,13 @@ export function PointCurator({
               {selected.length - gaps.length} of {selected.length} concerns covered
             </p>
           </div>
-          <div className="grid grid-cols-1 gap-px bg-hairline sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             {selected.map((id) => {
               const c = concerns.find((x) => x.id === id)!;
               const gap = gaps.includes(id);
               const by = shelfProducts.filter((p) => p.covers.includes(id));
               return (
-                <div key={id} className="bg-card px-8 py-6">
+                <div key={id} className="border-b border-r border-hairline bg-card px-8 py-6">
                   <div className="flex items-center justify-between gap-4">
                     <p className="text-[12px] tracking-[0.16em] uppercase">{c.label}</p>
                     <span
@@ -434,7 +434,7 @@ export function PointCurator({
               );
             })}
             {selected.length === 0 && (
-              <div className="bg-card px-8 py-6 text-[13px] text-charcoal">
+              <div className="border-b border-r border-hairline bg-card px-8 py-6 text-[13px] text-charcoal">
                 Pick a concern above and I will start matching.
               </div>
             )}

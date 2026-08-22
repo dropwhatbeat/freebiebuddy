@@ -203,34 +203,73 @@ export function PointCurator({
             <div className="mt-10 grid gap-8 border-t border-hairline pt-10 lg:grid-cols-[150px_minmax(0,1fr)]">
               <CompactOrb
                 className="h-[150px] w-[150px]"
-                thinking={Boolean(active) || Boolean(quip)}
+                thinking={busy || Boolean(active) || Boolean(quip)}
                 mood={
                   !quip && shown?.score.tier === "Not for your skin" ? "caution" : "calm"
                 }
               />
 
-              {shown && (
+              <div className="self-start">
                 <CuratorSpeech
                   title={
                     quip
                       ? "Freebie Buddy · ahem"
-                      : active
-                        ? `Freebie Buddy · ${shown.reward.name}`
-                        : `Freebie Buddy · why these picks`
+                      : busy
+                        ? "Freebie Buddy · scoring your rewards"
+                        : activePick || active
+                          ? `Freebie Buddy · ${shown?.reward.name}`
+                          : `Freebie Buddy · here's what I suggest for you`
                   }
                   body={
                     quip
                       ? quip
-                      : active
-                        ? `${shown.score.headline} ${shown.reward.routine}`
-                        : gaps.length
-                          ? `${picks.length} rewards below close what your shelves are missing — ${gapLabels}. Anything that clashes with your skin type or an active you already use is labelled, not recommended.`
-                          : `Nothing is missing, so these ${picks.length} are ranked on ${skinType.toLowerCase()} skin condition and the categories you redeem most.`
+                      : busy
+                        ? wish
+                          ? `Reading your shelves against “${wish}” — one moment.`
+                          : "Scoring every reward against your profile and shelves — one moment."
+                        : activePick
+                          ? `${activePick.score.headline} ${activePick.aiRoutine}`
+                          : active
+                            ? `${active.score.headline} ${active.reward.routine}`
+                            : result.intro
                   }
-                  caution={!quip && active ? shown.reward.caution : undefined}
-                  className="self-start"
+                  caution={
+                    !quip && !busy
+                      ? (activePick?.aiCaution ?? (active ? active.reward.caution : undefined))
+                      : undefined
+                  }
                 />
-              )}
+
+                {result.note && !busy && (
+                  <p className="mt-3 text-[11px] text-muted-foreground">{result.note}</p>
+                )}
+
+                <RecommendationPrompt
+                  wish={wish}
+                  busy={busy}
+                  onSubmit={askWish}
+                  onClear={clearWish}
+                />
+
+                {shelfDirty && !busy && (
+                  <motion.div
+                    initial={reduced ? false : { opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mt-4 flex flex-wrap items-center gap-3 border border-gold/50 bg-gold/10 px-4 py-3"
+                  >
+                    <p className="text-[13px] text-foreground">
+                      Your shelves changed — my picks are out of date.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => recommend.mutate({ shelf, wish })}
+                      className="bg-foreground px-4 py-2 text-[10px] tracking-[0.2em] text-background uppercase"
+                    >
+                      Update recommendations
+                    </button>
+                  </motion.div>
+                )}
+              </div>
 
             </div>
 
@@ -238,12 +277,22 @@ export function PointCurator({
               <h2 className="font-serif text-2xl">Top picks</h2>
 
               <p className="text-[10px] tracking-[0.2em] text-muted-foreground uppercase">
-                {picks.length} picks
+                {busy ? "Scoring…" : `${picks.length} picks`}
               </p>
             </div>
 
             <div className="grid gap-px bg-hairline sm:grid-cols-2 xl:grid-cols-3">
-              {picks.map(({ reward, score }, i) => (
+              {busy
+                ? [0, 1, 2].map((i) => (
+                    <div key={i} className="animate-pulse bg-card p-6">
+                      <div className="h-40 w-full bg-hairline" />
+                      <div className="mt-5 h-3 w-1/3 bg-hairline" />
+                      <div className="mt-3 h-4 w-2/3 bg-hairline" />
+                      <div className="mt-6 h-9 w-full bg-hairline" />
+                    </div>
+                  ))
+                : picks.map(({ reward, score }, i) => (
+
                 <motion.div
                   key={reward.id}
                   initial={reduced ? false : { opacity: 0, y: 10 }}

@@ -274,16 +274,14 @@ export function PointCurator({
             </div>
           </motion.section>
 
-          <div className="mt-12">
-            <BuddyBar
-              title={speech.title}
-              body={speech.body}
-              caution={speech.caution}
-              thinking={busy || Boolean(active) || Boolean(activePick) || Boolean(quip)}
-              mood={!quip && shown?.score.tier === "Not for your skin" ? "caution" : "calm"}
-              readKey={`${activeId ?? "intro"}-${quip ?? ""}-${busy}`}
-            />
-          </div>
+          <BuddyBar
+            title={speech.title}
+            body={speech.body}
+            caution={speech.caution}
+            thinking={busy || Boolean(active) || Boolean(activePick) || Boolean(quip)}
+            mood={!quip && shown?.score.tier === "Not for your skin" ? "caution" : "calm"}
+            readKey={`${activeId ?? "intro"}-${quip ?? ""}-${busy}`}
+          />
 
           <div className="mt-6 flex items-end justify-between border-b border-hairline pb-4">
             <h2 className="font-serif text-2xl">Top picks</h2>

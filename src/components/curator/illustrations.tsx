@@ -50,6 +50,41 @@ export function ProductBottle({ id, className }: BottleProps & { id: string }) {
         <circle cx="46" cy="60" r="6" />
       </g>
     ),
+    shampoo: (
+      <g>
+        <path d="M28 40h36c4 0 6 3 6 7v44c0 6-4 10-10 10H32c-6 0-10-4-10-10V47c0-4 2-7 6-7z" />
+        <path d="M40 40V24h12v16" />
+        <path d="M38 18h16l-2 6H40z" />
+        <path d="M24 62h44" />
+        <path d="M30 74h16" />
+      </g>
+    ),
+    hairoil: (
+      <g>
+        <path d="M36 46h20c3 0 5 2 5 6v38c0 6-4 10-10 10H41c-6 0-10-4-10-10V52c0-4 2-6 5-6z" />
+        <path d="M41 46V28h10v18" />
+        <path d="M40 20h12v8H40z" />
+        <path d="M34 68h24" />
+        <path d="M42 14v4M50 12v6" />
+      </g>
+    ),
+    foundation: (
+      <g>
+        <path d="M32 42h28c3 0 5 2 5 5v46c0 5-4 9-9 9H36c-5 0-9-4-9-9V47c0-3 2-5 5-5z" />
+        <path d="M40 42V26h12v16" />
+        <path d="M38 18h16v8H38z" />
+        <path d="M27 78h38" />
+      </g>
+    ),
+    lipstick: (
+      <g>
+        <path d="M36 54h20v40c0 4-3 7-7 7h-6c-4 0-7-3-7-7V54z" />
+        <path d="M38 54V34c0-3 2-5 5-5h6c3 0 5 2 5 5v20" />
+        <path d="M40 29V16c0-3 3-5 6-5s6 2 6 5v13" />
+        <path d="M34 66h24" />
+      </g>
+    ),
+
   };
   return (
     <svg

@@ -1,6 +1,7 @@
 import {
   concerns as allConcerns,
   pastPurchases,
+  type Category,
   type ConcernId,
   type Reward,
   type SkinType,
@@ -34,6 +35,8 @@ export interface Score {
 }
 
 const label = (id: ConcernId) => allConcerns.find((c) => c.id === id)?.label ?? id;
+export const concernCategory = (id: ConcernId): Category =>
+  allConcerns.find((c) => c.id === id)?.category ?? "Skin";
 
 /** Concerns the current shelf does not answer. */
 export function openGaps(selectedConcerns: ConcernId[], shelf: string[]): ConcernId[] {
@@ -62,7 +65,10 @@ export function scoreReward(reward: Reward, input: ScoreInput): Score {
   if (gapsClosed.length) {
     lines.push({
       label: "Closes a gap",
-      detail: `Nothing on your shelf answers ${gapsClosed.map(label).join(" or ").toLowerCase()}.`,
+      detail: `Nothing on your ${reward.category.toLowerCase()} shelf answers ${gapsClosed
+        .map(label)
+        .join(" or ")
+        .toLowerCase()}.`,
       weight: "positive",
     });
   } else if (alsoWanted.length) {
@@ -85,19 +91,21 @@ export function scoreReward(reward: Reward, input: ScoreInput): Score {
     });
   }
 
-  lines.push(
-    wrongSkin
-      ? {
-          label: `${input.skinType} skin`,
-          detail: reward.avoidReason ?? "The texture is wrong for your skin type.",
-          weight: "negative",
-        }
-      : {
-          label: `${input.skinType} skin`,
-          detail: "Texture and finish suit your skin type.",
-          weight: "positive",
-        },
-  );
+  if (reward.avoidFor?.length || reward.category === "Skin") {
+    lines.push(
+      wrongSkin
+        ? {
+            label: `${input.skinType} skin`,
+            detail: reward.avoidReason ?? "The texture is wrong for your skin type.",
+            weight: "negative",
+          }
+        : {
+            label: `${input.skinType} skin`,
+            detail: "Texture and finish suit your skin type.",
+            weight: "positive",
+          },
+    );
+  }
 
   if (clash) {
     lines.push({
@@ -141,9 +149,7 @@ export function scoreReward(reward: Reward, input: ScoreInput): Score {
       : (reward.conflictReason ?? "It clashes with something already in your routine.");
   } else if (gapsClosed.length) {
     tier = "Best fit";
-    headline = `Closes ${gapsClosed.map(label).join(" and ").toLowerCase()} — your only open gap${
-      gapsClosed.length > 1 ? "s" : ""
-    }.`;
+    headline = `Closes ${gapsClosed.map(label).join(" and ").toLowerCase()} — open on your ${reward.category.toLowerCase()} shelf.`;
   } else if (loved.length || alsoWanted.length) {
     tier = "Good fit";
     headline = loved.length

@@ -106,6 +106,14 @@ export function ProductBottle({ id, className }: BottleProps & { id: string }) {
         <path d="M30 82h18" />
       </g>
     ),
+    mask: (
+      <g>
+        <path d="M26 46h40c4 0 6 3 6 7v34c0 7-5 12-12 12H32c-7 0-12-5-12-12V53c0-4 2-7 6-7z" />
+        <path d="M36 46V32h20v14" />
+        <path d="M40 26h12v6H40z" />
+        <path d="M30 66c6-4 12-4 18 0s12 4 18 0" />
+      </g>
+    ),
     spf: (
       <g>
         <path d="M32 44h28l6 44c1 8-4 13-12 13H38c-8 0-13-5-12-13l6-44z" />

@@ -135,6 +135,9 @@ export function Boutique({
                     {reward.category}
                     <span className="block">{reward.type}</span>
                   </span>
+                </div>
+
+
 
 
                 <FitBadge tier={score.tier} segments={score.segments} />

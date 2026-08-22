@@ -2,9 +2,9 @@ import { motion, useReducedMotion } from "motion/react";
 
 import { RewardVessel } from "./illustrations";
 
-import { FitBadge } from "./FitBadge";
 import type { Reward } from "./data";
 import type { Score } from "./scoring";
+
 
 export function RewardCard({
   reward,

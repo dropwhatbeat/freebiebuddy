@@ -32,6 +32,19 @@ export interface Concern {
 }
 
 export const concerns: Concern[] = [
+  { id: "blackheads", label: "Blackheads", blurb: "Congestion across the nose and chin", category: "Skin" },
+  {
+    id: "pigmentation",
+    label: "Pigmentation & dark spots",
+    blurb: "Uneven tone, lingering marks",
+    category: "Skin",
+  },
+  {
+    id: "lines",
+    label: "Fine lines & wrinkles",
+    blurb: "Scan reads moderate lines",
+    category: "Skin",
+  },
   { id: "hydration", label: "Hydration", blurb: "Tight by mid-afternoon", category: "Skin" },
   {
     id: "barrier",
@@ -39,18 +52,14 @@ export const concerns: Concern[] = [
     blurb: "Reacts to strong actives",
     category: "Skin",
   },
-  {
-    id: "brightening",
-    label: "Brightening",
-    blurb: "Post-acne marks, uneven tone",
-    category: "Skin",
-  },
   { id: "texture", label: "Texture", blurb: "Rough patches around the chin", category: "Skin" },
   { id: "pores", label: "Pores & oil", blurb: "Shine through the T-zone", category: "Skin" },
   { id: "firmness", label: "Firmness", blurb: "Early loss of bounce", category: "Skin" },
 
-  { id: "frizz", label: "Frizz", blurb: "Humidity lifts the surface", category: "Hair" },
-  { id: "scalp", label: "Scalp care", blurb: "Flaking at the crown", category: "Hair" },
+  { id: "frizz", label: "Frizz", blurb: "Humidity lifts curly, permed lengths", category: "Hair" },
+  { id: "dandruff", label: "Dandruff", blurb: "Flaking on a dry scalp", category: "Hair" },
+  { id: "hairdryness", label: "Dryness", blurb: "Thick, curly hair drinks moisture", category: "Hair" },
+  { id: "scalp", label: "Scalp care", blurb: "Dry scalp needs balancing", category: "Hair" },
   { id: "damage", label: "Damage & split ends", blurb: "Colour-treated mid-lengths", category: "Hair" },
   { id: "volume", label: "Volume", blurb: "Flat by the second day", category: "Hair" },
 

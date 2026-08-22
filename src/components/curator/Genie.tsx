@@ -88,14 +88,9 @@ export function GenieMascot({
         />
 
         {/* serum column rising and falling */}
-        <motion.g
-          animate={reduced ? {} : { scaleY: [0.5, 1, 0.5] }}
-          style={{ transformOrigin: "70px 160px" }}
-          transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
-        >
+        <g className={reduced ? "" : "serum-pulse"}>
           <rect x="60.5" y="96" width="19" height="64" className="fill-gold-soft" />
-        </motion.g>
-
+        </g>
 
         {/* gold droplet at the tip */}
         <motion.path

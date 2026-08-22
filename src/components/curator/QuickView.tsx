@@ -104,7 +104,7 @@ export function QuickView({
 
               <section className="mt-8 border-t border-hairline pt-6">
                 <p className="flex items-center gap-2 text-[10px] tracking-[0.22em] text-gold uppercase">
-                  <MicroSpark /> The Curator's read
+                  <MicroSpark /> Freebie Buddy's read
                 </p>
                 <p className="mt-3 text-[13px] leading-relaxed text-charcoal">{score.headline}</p>
                 <ul className="mt-3 space-y-2 text-[12px] leading-relaxed text-muted-foreground">

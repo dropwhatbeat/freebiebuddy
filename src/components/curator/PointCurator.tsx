@@ -28,10 +28,11 @@ export function PointCurator({
 }) {
   const reduced = useReducedMotion();
   const [railOpen, setRailOpen] = useState(true);
-  const [skinType, setSkinType] = useState<SkinType>(defaultProfile.skinType);
-  const [selected, setSelected] = useState<ConcernId[]>(defaultProfile.concerns);
+  const skinType: SkinType = defaultProfile.skinType;
+  const [selected] = useState<ConcernId[]>(defaultProfile.concerns);
   const [shelf, setShelf] = useState<string[]>(defaultShelf);
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [quip, setQuip] = useState<string | null>(null);
 
   const gaps = useMemo(() => openGaps(selected, shelf), [selected, shelf]);
 

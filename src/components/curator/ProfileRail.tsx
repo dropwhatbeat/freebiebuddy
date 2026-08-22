@@ -51,14 +51,14 @@ export function ProfileRail({
 
         <div className="mt-3 flex flex-wrap items-center gap-1.5">
           <span className="text-[9px] tracking-[0.18em] text-muted-foreground uppercase">
-            Skin
+            Skin type
           </span>
           <Tag>{skinType}</Tag>
         </div>
 
         <div className="mt-2 flex flex-wrap items-center gap-1.5">
           <span className="text-[9px] tracking-[0.18em] text-muted-foreground uppercase">
-            Hair
+            Hair type
           </span>
           <Tag>{defaultProfile.hairType}</Tag>
           <Tag>{defaultProfile.hairTexture}</Tag>
@@ -74,7 +74,7 @@ export function ProfileRail({
           return (
             <div key={cat} className="mt-2 flex flex-wrap items-center gap-1.5">
               <span className="text-[9px] tracking-[0.18em] text-muted-foreground uppercase">
-                {cat}
+                {cat} concerns
               </span>
               {mine.map((c) => (
                 <Tag key={c.id} flagged={gaps.includes(c.id)} title={c.blurb}>

@@ -156,10 +156,10 @@ export function PointCurator({
                 <CuratorSpeech
                   title={
                     quip
-                      ? "Curator · ahem"
+                      ? "Freebie Buddy · ahem"
                       : active
-                        ? `Curator · ${shown.reward.name}`
-                        : `Curator · why these picks`
+                        ? `Freebie Buddy · ${shown.reward.name}`
+                        : `Freebie Buddy · why these picks`
                   }
                   body={
                     quip
@@ -178,9 +178,8 @@ export function PointCurator({
             </div>
 
             <div className="mt-10 flex items-end justify-between border-b border-hairline pb-4">
-              <h2 className="font-serif text-2xl">
-                {gaps.length ? "Recommended to close your gaps" : "Best fits for your profile"}
-              </h2>
+              <h2 className="font-serif text-2xl">Top picks</h2>
+
               <p className="text-[10px] tracking-[0.2em] text-muted-foreground uppercase">
                 {picks.length} picks
               </p>

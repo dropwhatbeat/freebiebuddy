@@ -145,24 +145,35 @@ export function PointCurator({
             <div className="mt-10 grid gap-8 border-t border-hairline pt-10 lg:grid-cols-[150px_minmax(0,1fr)]">
               <CompactOrb
                 className="h-[150px] w-[150px]"
-                thinking={Boolean(active)}
-                mood={shown?.score.tier === "Not for your skin" ? "caution" : "calm"}
+                thinking={Boolean(active) || Boolean(quip)}
+                mood={
+                  !quip && shown?.score.tier === "Not for your skin" ? "caution" : "calm"
+                }
               />
 
               {shown && (
                 <CuratorSpeech
-                  title={active ? `Curator · ${shown.reward.name}` : `Curator · why these picks`}
-                  body={
-                    active
-                      ? `${shown.score.headline} ${shown.reward.routine}`
-                      : gaps.length
-                        ? `${picks.length} rewards below close what your shelves are missing — ${gapLabels}. Anything that clashes with your skin type or an active you already use is labelled, not recommended.`
-                        : `Nothing is missing, so these ${picks.length} are ranked on ${skinType.toLowerCase()} skin condition and the categories you redeem most.`
+                  title={
+                    quip
+                      ? "Curator · ahem"
+                      : active
+                        ? `Curator · ${shown.reward.name}`
+                        : `Curator · why these picks`
                   }
-                  caution={active ? shown.reward.caution : undefined}
+                  body={
+                    quip
+                      ? quip
+                      : active
+                        ? `${shown.score.headline} ${shown.reward.routine}`
+                        : gaps.length
+                          ? `${picks.length} rewards below close what your shelves are missing — ${gapLabels}. Anything that clashes with your skin type or an active you already use is labelled, not recommended.`
+                          : `Nothing is missing, so these ${picks.length} are ranked on ${skinType.toLowerCase()} skin condition and the categories you redeem most.`
+                  }
+                  caution={!quip && active ? shown.reward.caution : undefined}
                   className="self-start"
                 />
               )}
+
             </div>
 
             <div className="mt-10 flex items-end justify-between border-b border-hairline pb-4">

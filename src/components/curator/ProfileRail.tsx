@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { toast } from "sonner";
 
 import { ProductBottle } from "./illustrations";
 import { MicroSpark } from "./CompactOrb";
@@ -7,32 +8,35 @@ import {
   categories,
   concerns,
   pastPurchases,
-  skinTypes,
   type Category,
   type ConcernId,
   type SkinType,
 } from "./data";
 
+const quips = [
+  "Careful — those are limited edition.",
+  "Please don't rattle the shelf, I just alphabetised it.",
+  "One more shake and the serum files a complaint.",
+];
+
 export function ProfileRail({
   open,
   onToggle,
   skinType,
-  onSkinType,
   selected,
-  onToggleConcern,
   shelf,
   onToggleShelf,
   gaps,
+  onQuip,
 }: {
   open: boolean;
   onToggle: () => void;
   skinType: SkinType;
-  onSkinType: (s: SkinType) => void;
   selected: ConcernId[];
-  onToggleConcern: (c: ConcernId) => void;
   shelf: string[];
   onToggleShelf: (id: string) => void;
   gaps: ConcernId[];
+  onQuip?: (line: string) => void;
 }) {
   const reduced = useReducedMotion();
 
@@ -70,47 +74,51 @@ export function ProfileRail({
         </button>
       </div>
 
-      <section className="border-b border-hairline px-5 py-5">
-        <h3 className="font-serif text-lg">Beauty profile</h3>
-        <p className="mt-3 text-[10px] tracking-[0.2em] text-muted-foreground uppercase">
-          Skin type
-        </p>
-        <div className="mt-2 flex flex-wrap gap-2">
-          {skinTypes.map((s) => (
-            <Chip key={s} active={s === skinType} onClick={() => onSkinType(s)}>
-              {s}
-            </Chip>
-          ))}
+      {/* Beauty profile — read-only mini tags */}
+      <section className="border-b border-hairline px-5 py-4">
+        <h3 className="font-serif text-base">Beauty profile</h3>
+
+        <div className="mt-3 flex flex-wrap items-center gap-1.5">
+          <span className="text-[9px] tracking-[0.18em] text-muted-foreground uppercase">
+            Skin
+          </span>
+          <Tag>{skinType}</Tag>
         </div>
 
-        {categories.map((cat) => (
-          <div key={cat}>
-            <p className="mt-6 text-[10px] tracking-[0.2em] text-muted-foreground uppercase">
-              {cat} concerns
-            </p>
-            <div className="mt-2 flex flex-wrap gap-2">
-              {concerns
-                .filter((c) => c.category === cat)
-                .map((c) => (
-                  <Chip
-                    key={c.id}
-                    active={selected.includes(c.id)}
-                    flagged={gaps.includes(c.id)}
-                    onClick={() => onToggleConcern(c.id)}
-                    title={c.blurb}
-                  >
-                    {c.label}
-                  </Chip>
-                ))}
+        {categories.map((cat) => {
+          const mine = concerns.filter(
+            (c) => c.category === cat && selected.includes(c.id),
+          );
+          if (!mine.length) return null;
+          return (
+            <div key={cat} className="mt-2 flex flex-wrap items-center gap-1.5">
+              <span className="text-[9px] tracking-[0.18em] text-muted-foreground uppercase">
+                {cat}
+              </span>
+              {mine.map((c) => (
+                <Tag key={c.id} flagged={gaps.includes(c.id)} title={c.blurb}>
+                  {c.label}
+                </Tag>
+              ))}
             </div>
-          </div>
-        ))}
+          );
+        })}
 
-        <p className="mt-4 text-[12px] leading-relaxed text-muted-foreground">
+        <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground">
           {gaps.length
             ? `${gaps.length} concern${gaps.length > 1 ? "s" : ""} with nothing on your shelves.`
             : "Your shelves answer every concern you've flagged."}
         </p>
+
+        <button
+          type="button"
+          onClick={() =>
+            toast("Prototype", { description: "Your full Beauty Profile would open here." })
+          }
+          className="mt-3 text-[9px] tracking-[0.18em] text-gold uppercase hover:underline focus-visible:ring-1 focus-visible:ring-gold focus-visible:outline-none"
+        >
+          View my beauty profile ›
+        </button>
       </section>
 
       <section className="px-5 py-5">
@@ -123,6 +131,7 @@ export function ProfileRail({
             shelf={shelf}
             onToggleShelf={onToggleShelf}
             reduced={Boolean(reduced)}
+            onQuip={onQuip}
           />
         ))}
       </section>
@@ -135,16 +144,31 @@ function ShelfGroup({
   shelf,
   onToggleShelf,
   reduced,
+  onQuip,
 }: {
   category: Category;
   shelf: string[];
   onToggleShelf: (id: string) => void;
   reduced: boolean;
+  onQuip?: (line: string) => void;
 }) {
   const [adding, setAdding] = useState(false);
+  const [wobble, setWobble] = useState(0);
+  const clicks = useRef<number[]>([]);
   const items = pastPurchases.filter((p) => p.category === category);
   const onShelf = items.filter((p) => shelf.includes(p.id));
   const notOnShelf = items.filter((p) => !shelf.includes(p.id));
+
+  const nudge = () => {
+    if (reduced) return;
+    setWobble((w) => w + 1);
+    const now = Date.now();
+    clicks.current = [...clicks.current, now].filter((t) => now - t < 1600);
+    if (clicks.current.length >= 3) {
+      clicks.current = [];
+      onQuip?.(quips[Math.floor(Math.random() * quips.length)]);
+    }
+  };
 
   return (
     <div className="mt-5">
@@ -153,36 +177,63 @@ function ShelfGroup({
         <span className="text-muted-foreground">{onShelf.length}</span>
       </p>
 
-      <ul className="mt-1">
-        <AnimatePresence initial={false}>
-          {onShelf.map((p) => (
-            <motion.li
-              key={p.id}
-              layout
-              initial={reduced ? false : { opacity: 0, y: -4 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={reduced ? { opacity: 0 } : { opacity: 0, x: -8 }}
-              transition={{ duration: 0.2 }}
-              className="group flex items-center gap-2 border-b border-hairline py-1.5"
-            >
-              <ProductBottle id={p.vessel} className="h-6 w-auto shrink-0 text-ink" />
-              <span className="min-w-0 flex-1 truncate text-[12px] text-ink">{p.name}</span>
-              <button
-                type="button"
-                onClick={() => onToggleShelf(p.id)}
-                aria-label={`Remove ${p.name} from shelf`}
-                className="text-[10px] tracking-[0.16em] text-muted-foreground uppercase opacity-0 transition-opacity group-hover:opacity-100 hover:text-ink focus-visible:opacity-100 focus-visible:ring-1 focus-visible:ring-gold focus-visible:outline-none"
+      {/* The shelf itself */}
+      <div
+        key={wobble}
+        className={wobble && !reduced ? "shelf-wobble" : undefined}
+        onClick={nudge}
+        role="presentation"
+      >
+        <div className="flex min-h-[52px] items-end gap-1 px-1">
+          <AnimatePresence initial={false}>
+            {onShelf.map((p) => (
+              <motion.div
+                key={p.id}
+                layout
+                initial={reduced ? false : { opacity: 0, y: -18 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={reduced ? { opacity: 0 } : { opacity: 0, x: -10, rotate: -25 }}
+                transition={{ type: "spring", stiffness: 420, damping: 18 }}
+                className="group relative"
               >
-                ×
-              </button>
-            </motion.li>
-          ))}
-        </AnimatePresence>
-      </ul>
+                <div
+                  className={`relative transition-transform duration-200 group-hover:-translate-y-1 ${
+                    wobble && !reduced ? "bottle-jiggle" : ""
+                  }`}
+                >
+                  <ProductBottle
+                    id={p.vessel}
+                    className="h-11 w-auto shrink-0 text-charcoal transition-colors group-hover:text-ink"
+                  />
+                </div>
 
-      {onShelf.length === 0 && (
-        <p className="mt-1 text-[11px] text-muted-foreground">Nothing here yet.</p>
-      )}
+                {/* hover label + remove */}
+                <div className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-1 w-36 -translate-x-1/2 border border-hairline bg-card px-2 py-1.5 opacity-0 shadow-sm transition-opacity group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100">
+                  <p className="text-[11px] leading-tight text-ink">{p.name}</p>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onToggleShelf(p.id);
+                    }}
+                    className="mt-1 text-[9px] tracking-[0.16em] text-muted-foreground uppercase hover:text-ink focus-visible:ring-1 focus-visible:ring-gold focus-visible:outline-none"
+                  >
+                    × Remove
+                  </button>
+                </div>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+
+          {onShelf.length === 0 && (
+            <div className="h-10 w-7 rounded-sm border border-dashed border-hairline" />
+          )}
+        </div>
+
+        {/* plank */}
+        <div className="h-px w-full bg-ink/70" />
+        <div className="h-1.5 w-full bg-gradient-to-b from-ink/10 to-transparent" />
+      </div>
 
       <AnimatePresence initial={false}>
         {adding && notOnShelf.length > 0 && (
@@ -193,14 +244,9 @@ function ShelfGroup({
             className="overflow-hidden"
           >
             {notOnShelf.map((p) => (
-              <li
-                key={p.id}
-                className="flex items-center gap-2 border-b border-hairline py-1.5"
-              >
+              <li key={p.id} className="flex items-center gap-2 border-b border-hairline py-1.5">
                 <ProductBottle id={p.vessel} className="h-6 w-auto shrink-0 text-charcoal" />
-                <span className="min-w-0 flex-1 truncate text-[12px] text-charcoal">
-                  {p.name}
-                </span>
+                <span className="min-w-0 flex-1 truncate text-[12px] text-charcoal">{p.name}</span>
                 <button
                   type="button"
                   onClick={() => onToggleShelf(p.id)}
@@ -228,35 +274,23 @@ function ShelfGroup({
   );
 }
 
-
-function Chip({
-  active,
+function Tag({
   flagged,
   children,
-  onClick,
   title,
 }: {
-  active: boolean;
   flagged?: boolean;
   children: React.ReactNode;
-  onClick: () => void;
   title?: string;
 }) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
+    <span
       title={title}
-      aria-pressed={active}
-      className={`border px-3 py-1.5 text-[11px] tracking-[0.08em] transition-colors focus-visible:ring-1 focus-visible:ring-gold focus-visible:outline-none ${
-        active
-          ? flagged
-            ? "border-gold bg-gold-soft/40 text-ink"
-            : "border-ink bg-ink text-primary-foreground"
-          : "border-hairline text-muted-foreground hover:border-charcoal hover:text-ink"
+      className={`border px-1.5 py-0.5 text-[10px] tracking-[0.06em] ${
+        flagged ? "border-gold bg-gold-soft/40 text-ink" : "border-hairline text-charcoal"
       }`}
     >
       {children}
-    </button>
+    </span>
   );
 }

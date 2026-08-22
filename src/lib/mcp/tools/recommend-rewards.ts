@@ -40,7 +40,7 @@ export default defineTool({
       .sort((a, b) => {
         const tier = tierRank[a.score.tier] - tierRank[b.score.tier];
         if (tier !== 0) return tier;
-        const gap = b.score.gapsClosed.length - a.score.gapsClosed.length;
+        const gap = b.score.matchedConcerns.length - a.score.matchedConcerns.length;
         if (gap !== 0) return gap;
         return a.reward.points - b.reward.points;
       })
@@ -54,7 +54,7 @@ export default defineTool({
         fit: score.tier,
         headline: score.headline,
         reasons: score.lines,
-        gapsClosed: score.gapsClosed,
+        matchedConcerns: score.matchedConcerns,
         affordable: score.affordable,
         shortBy: score.shortBy,
         routine: reward.routine,

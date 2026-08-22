@@ -235,7 +235,7 @@ export function PointCurator({
                 className="h-[150px] w-[150px]"
                 thinking={busy || Boolean(active) || Boolean(quip)}
                 mood={
-                  !quip && shown?.score.tier === "Not for your skin" ? "caution" : "calm"
+                  !quip && shown?.score.tier === "Okay fit" ? "caution" : "calm"
                 }
               />
 
@@ -280,7 +280,7 @@ export function PointCurator({
             body={speech.body}
             caution={speech.caution}
             thinking={busy || Boolean(active) || Boolean(activePick) || Boolean(quip)}
-            mood={!quip && shown?.score.tier === "Not for your skin" ? "caution" : "calm"}
+            mood={!quip && shown?.score.tier === "Okay fit" ? "caution" : "calm"}
             readKey={`${activeId ?? "intro"}-${quip ?? ""}-${busy}`}
           />
 

@@ -21,7 +21,7 @@ export function FitBadge({
             animate={{ opacity: i < segments ? 1 : 0.18 }}
             transition={{ duration: 0.35, delay: i * 0.06 }}
             className={`block h-[3px] w-6 ${
-              tier === "Not for your skin" ? "bg-charcoal" : "bg-gold"
+              tier === "Okay fit" ? "bg-charcoal" : "bg-gold"
             }`}
           />
         ))}

@@ -276,24 +276,6 @@ function ShelfGroup({
                   )}
                 </div>
 
-                {/* hover label + remove */}
-                <div className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-1 w-36 -translate-x-1/2 border border-hairline bg-card px-2 py-1.5 opacity-0 shadow-sm transition-opacity group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100">
-                  <p className="text-[9px] tracking-[0.16em] text-muted-foreground uppercase">
-                    {p.brand}
-                  </p>
-                  <p className="text-[11px] leading-tight text-ink">{p.name}</p>
-
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onToggleShelf(p.id);
-                    }}
-                    className="mt-1 text-[9px] tracking-[0.16em] text-muted-foreground uppercase hover:text-ink focus-visible:ring-1 focus-visible:ring-gold focus-visible:outline-none"
-                  >
-                    × Remove
-                  </button>
-                </div>
               </motion.div>
             ))}
           </AnimatePresence>
@@ -302,6 +284,42 @@ function ShelfGroup({
             <div className="h-10 w-7 rounded-sm border border-dashed border-hairline" />
           )}
         </div>
+
+        {/* floating hover label + remove (escapes shelf + sidebar clipping) */}
+        {hovered &&
+          typeof document !== "undefined" &&
+          (() => {
+            const p = onShelf.find((x) => x.id === hovered.id);
+            if (!p) return null;
+            return createPortal(
+              <div
+                className="pointer-events-auto fixed z-[80] w-40 -translate-x-1/2 -translate-y-full border border-hairline bg-card px-2 py-1.5 shadow-md"
+                style={{ left: hovered.x, top: hovered.y - 6 }}
+                onMouseEnter={() => {
+                  if (hoverTimer.current) clearTimeout(hoverTimer.current);
+                }}
+                onMouseLeave={closeLabel}
+              >
+                <p className="text-[9px] tracking-[0.16em] text-muted-foreground uppercase">
+                  {p.brand}
+                </p>
+                <p className="text-[11px] leading-tight text-ink">{p.name}</p>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onToggleShelf(p.id);
+                    setHovered(null);
+                  }}
+                  className="mt-1 text-[9px] tracking-[0.16em] text-muted-foreground uppercase hover:text-ink focus-visible:ring-1 focus-visible:ring-gold focus-visible:outline-none"
+                >
+                  × Remove
+                </button>
+              </div>,
+              document.body,
+            );
+          })()}
+
 
         {/* plank */}
         <div className="h-px w-full bg-ink/70" />

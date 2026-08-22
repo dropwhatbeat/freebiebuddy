@@ -131,10 +131,11 @@ export function Boutique({
                         : "text-ink group-hover:text-gold"
                     }`}
                   />
-                  <span className="text-[10px] tracking-[0.16em] text-muted-foreground uppercase">
-                    {reward.type}
+                  <span className="text-right text-[10px] tracking-[0.16em] text-muted-foreground uppercase">
+                    {reward.category}
+                    <span className="block">{reward.type}</span>
                   </span>
-                </div>
+
 
                 <FitBadge tier={score.tier} segments={score.segments} />
 

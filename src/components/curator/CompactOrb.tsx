@@ -155,3 +155,28 @@ export function MicroSpark({ className = "h-3 w-3" }: { className?: string }) {
     </svg>
   );
 }
+
+/** Tiny Freebie Buddy glyph that marks LLM-written copy. */
+export function BuddyMark({ className = "h-3.5 w-3.5" }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      fill="none"
+      className={`${className} shrink-0`}
+      role="img"
+      aria-label="Written by Freebie Buddy"
+    >
+      <circle cx="8" cy="8" r="6.4" className="stroke-gold" strokeWidth="1.1" />
+      <circle cx="8" cy="8" r="4.6" className="fill-gold-soft" opacity="0.5" />
+      <circle cx="6.2" cy="7.2" r="0.9" className="fill-ink" />
+      <circle cx="9.8" cy="7.2" r="0.9" className="fill-ink" />
+      <path
+        d="M6.2 9.6c1.2 1.2 2.4 1.2 3.6 0"
+        className="stroke-ink"
+        strokeWidth="1"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+

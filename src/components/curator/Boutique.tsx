@@ -179,9 +179,9 @@ export function Boutique({
                     }`}
                   >
                     {done
-                      ? "Claimed"
+                      ? "In your bag"
                       : score.affordable
-                        ? "Claim reward"
+                        ? "Add to bag"
                         : `${score.shortBy.toLocaleString()} pts short`}
                   </button>
                   <button

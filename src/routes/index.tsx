@@ -25,8 +25,9 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
-  const [points, setPoints] = useState(1240);
-  const [redeemed, setRedeemed] = useState<RedeemedEntry[]>([]);
+  const balance = 1240;
+  const [bag, setBag] = useState<RedeemedEntry[]>([]);
+  const available = balance - bag.reduce((sum, r) => sum + r.points, 0);
 
   const handleRedeem = ({
     id,
@@ -37,10 +38,10 @@ function Index() {
     product: string;
     points: number;
   }) => {
-    setPoints((p) => Math.max(0, p - cost));
-    setRedeemed((prev) => [...prev, { id, name: product, points: cost }]);
-    toast(`${product} is yours.`, {
-      description: `${cost.toLocaleString()} points redeemed. A confirmation would be sent to your Beauty Pass.`,
+    if (cost > available || bag.some((r) => r.id === id)) return;
+    setBag((prev) => [...prev, { id, name: product, points: cost }]);
+    toast(`${product} added to your bag.`, {
+      description: `${cost.toLocaleString()} points held. ${(available - cost).toLocaleString()} points still available.`,
     });
   };
 
@@ -50,10 +51,10 @@ function Index() {
 
       <main>
         <PointsBanner
-          points={points}
+          points={available}
           expiring={320}
           expiryDate="31 Aug 2027"
-          redeemed={redeemed}
+          redeemed={bag}
           onSummary={() =>
             toast("Points summary", {
               description:
@@ -62,8 +63,8 @@ function Index() {
           }
         />
         <PointCurator
-          points={points}
-          redeemed={redeemed.map((r) => r.id)}
+          points={available}
+          redeemed={bag.map((r) => r.id)}
           onRedeem={handleRedeem}
         />
       </main>

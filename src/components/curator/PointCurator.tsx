@@ -228,9 +228,9 @@ export function PointCurator({
                     }`}
                   >
                     {redeemed.includes(reward.id)
-                      ? "Claimed"
+                      ? "In your bag"
                       : score.affordable
-                        ? "Claim reward"
+                        ? "Add to bag"
                         : `${score.shortBy.toLocaleString()} pts short`}
                   </button>
                 </motion.article>

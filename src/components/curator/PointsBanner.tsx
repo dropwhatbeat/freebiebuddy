@@ -54,10 +54,10 @@ export function PointsBanner({
                   {display.toLocaleString()}
                 </p>
                 <p className="mt-3 text-[11px] tracking-[0.2em] text-charcoal uppercase">
-                  Points balance
+                  Points available
                 </p>
                 <p className="text-[11px] tracking-[0.16em] text-muted-foreground uppercase">
-                  As of today
+                  After items in your bag
                 </p>
               </div>
 
@@ -83,7 +83,7 @@ export function PointsBanner({
                 aria-expanded={openList}
                 className="border-b border-ink pb-0.5 text-[11px] tracking-[0.18em] uppercase transition-colors hover:border-gold hover:text-gold focus-visible:ring-1 focus-visible:ring-gold focus-visible:outline-none"
               >
-                View redeemed rewards
+                View bag
                 {redeemed.length ? ` (${redeemed.length})` : ""}
               </button>
               <button
@@ -113,11 +113,11 @@ export function PointsBanner({
             >
               <div className="mt-8 border-t border-hairline pt-6">
                 <p className="text-[10px] tracking-[0.24em] text-muted-foreground uppercase">
-                  Redeemed this session
+                  In your bag
                 </p>
                 {redeemed.length === 0 ? (
                   <p className="mt-3 text-[13px] text-charcoal">
-                    Nothing redeemed yet. Claimed rewards will be listed here with the points spent.
+                    Your bag is empty. Rewards you add will be listed here with the points they hold.
                   </p>
                 ) : (
                   <ul className="mt-3 divide-y divide-hairline">

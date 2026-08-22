@@ -3,9 +3,11 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { ProductBottle } from "./illustrations";
 import { MicroSpark } from "./CompactOrb";
 import {
+  categories,
   concerns,
   pastPurchases,
   skinTypes,
+  type Category,
   type ConcernId,
   type SkinType,
 } from "./data";
@@ -32,8 +34,6 @@ export function ProfileRail({
   gaps: ConcernId[];
 }) {
   const reduced = useReducedMotion();
-  const onShelf = pastPurchases.filter((p) => shelf.includes(p.id));
-  const notOnShelf = pastPurchases.filter((p) => !shelf.includes(p.id));
 
   if (!open) {
     return (
@@ -82,100 +82,143 @@ export function ProfileRail({
           ))}
         </div>
 
-        <p className="mt-6 text-[10px] tracking-[0.2em] text-muted-foreground uppercase">
-          Concerns
-        </p>
-        <div className="mt-2 flex flex-wrap gap-2">
-          {concerns.map((c) => (
-            <Chip
-              key={c.id}
-              active={selected.includes(c.id)}
-              flagged={gaps.includes(c.id)}
-              onClick={() => onToggleConcern(c.id)}
-              title={c.blurb}
-            >
-              {c.label}
-            </Chip>
-          ))}
-        </div>
+        {categories.map((cat) => (
+          <div key={cat}>
+            <p className="mt-6 text-[10px] tracking-[0.2em] text-muted-foreground uppercase">
+              {cat} concerns
+            </p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {concerns
+                .filter((c) => c.category === cat)
+                .map((c) => (
+                  <Chip
+                    key={c.id}
+                    active={selected.includes(c.id)}
+                    flagged={gaps.includes(c.id)}
+                    onClick={() => onToggleConcern(c.id)}
+                    title={c.blurb}
+                  >
+                    {c.label}
+                  </Chip>
+                ))}
+            </div>
+          </div>
+        ))}
+
         <p className="mt-4 text-[12px] leading-relaxed text-muted-foreground">
           {gaps.length
-            ? `${gaps.length} concern${gaps.length > 1 ? "s" : ""} with nothing on your shelf.`
-            : "Your shelf answers every concern you've flagged."}
+            ? `${gaps.length} concern${gaps.length > 1 ? "s" : ""} with nothing on your shelves.`
+            : "Your shelves answer every concern you've flagged."}
         </p>
       </section>
 
       <section className="px-5 py-5">
-        <h3 className="font-serif text-lg">Your shelf</h3>
+        <h3 className="font-serif text-lg">Your shelves</h3>
         <p className="mt-1 text-[12px] text-muted-foreground">
-          Built from Beauty Pass purchases — edit it and the scoring re-runs.
+          Built from Beauty Pass purchases — edit and the scoring re-runs.
         </p>
 
-        <ul className="mt-4 space-y-px">
-          <AnimatePresence initial={false}>
-            {onShelf.map((p) => (
-              <motion.li
-                key={p.id}
-                layout
-                initial={reduced ? false : { opacity: 0, y: -4 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={reduced ? { opacity: 0 } : { opacity: 0, x: -8 }}
-                transition={{ duration: 0.2 }}
-                className="flex items-center gap-3 border-b border-hairline py-3"
-              >
-                <ProductBottle id={p.id} className="h-9 w-auto shrink-0 text-ink" />
-                <span className="min-w-0 flex-1">
-                  <span className="block truncate text-[13px] text-ink">{p.name}</span>
-                  <span className="block text-[10px] tracking-[0.16em] text-muted-foreground uppercase">
-                    {p.step} · {p.purchased}
-                  </span>
-                </span>
-                <button
-                  type="button"
-                  onClick={() => onToggleShelf(p.id)}
-                  aria-label={`Remove ${p.name} from shelf`}
-                  className="text-[10px] tracking-[0.16em] text-muted-foreground uppercase hover:text-ink focus-visible:ring-1 focus-visible:ring-gold focus-visible:outline-none"
-                >
-                  Remove
-                </button>
-              </motion.li>
-            ))}
-          </AnimatePresence>
-        </ul>
-
-        {notOnShelf.length > 0 && (
-          <>
-            <p className="mt-6 text-[10px] tracking-[0.2em] text-muted-foreground uppercase">
-              Past purchases
-            </p>
-            <ul className="mt-2 space-y-px">
-              {notOnShelf.map((p) => (
-                <li
-                  key={p.id}
-                  className="flex items-center gap-3 border-b border-hairline py-3 opacity-70"
-                >
-                  <ProductBottle id={p.id} className="h-8 w-auto shrink-0 text-charcoal" />
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate text-[13px] text-charcoal">{p.name}</span>
-                    <span className="block text-[10px] tracking-[0.16em] text-muted-foreground uppercase">
-                      {p.purchased}
-                    </span>
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => onToggleShelf(p.id)}
-                    aria-label={`Add ${p.name} to shelf`}
-                    className="text-[10px] tracking-[0.16em] text-gold uppercase hover:underline focus-visible:ring-1 focus-visible:ring-gold focus-visible:outline-none"
-                  >
-                    + Add
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </>
-        )}
+        {categories.map((cat) => (
+          <ShelfGroup
+            key={cat}
+            category={cat}
+            shelf={shelf}
+            onToggleShelf={onToggleShelf}
+            reduced={Boolean(reduced)}
+          />
+        ))}
       </section>
     </motion.aside>
+  );
+}
+
+function ShelfGroup({
+  category,
+  shelf,
+  onToggleShelf,
+  reduced,
+}: {
+  category: Category;
+  shelf: string[];
+  onToggleShelf: (id: string) => void;
+  reduced: boolean;
+}) {
+  const items = pastPurchases.filter((p) => p.category === category);
+  const onShelf = items.filter((p) => shelf.includes(p.id));
+  const notOnShelf = items.filter((p) => !shelf.includes(p.id));
+
+  return (
+    <div className="mt-6">
+      <p className="flex items-baseline justify-between text-[10px] tracking-[0.2em] text-ink uppercase">
+        {category} shelf
+        <span className="text-muted-foreground">{onShelf.length} items</span>
+      </p>
+
+      <ul className="mt-2 space-y-px">
+        <AnimatePresence initial={false}>
+          {onShelf.map((p) => (
+            <motion.li
+              key={p.id}
+              layout
+              initial={reduced ? false : { opacity: 0, y: -4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={reduced ? { opacity: 0 } : { opacity: 0, x: -8 }}
+              transition={{ duration: 0.2 }}
+              className="flex items-center gap-3 border-b border-hairline py-3"
+            >
+              <ProductBottle id={p.vessel} className="h-9 w-auto shrink-0 text-ink" />
+              <span className="min-w-0 flex-1">
+                <span className="block truncate text-[13px] text-ink">{p.name}</span>
+                <span className="block text-[10px] tracking-[0.16em] text-muted-foreground uppercase">
+                  {p.step} · {p.purchased}
+                </span>
+              </span>
+              <button
+                type="button"
+                onClick={() => onToggleShelf(p.id)}
+                aria-label={`Remove ${p.name} from shelf`}
+                className="text-[10px] tracking-[0.16em] text-muted-foreground uppercase hover:text-ink focus-visible:ring-1 focus-visible:ring-gold focus-visible:outline-none"
+              >
+                Remove
+              </button>
+            </motion.li>
+          ))}
+        </AnimatePresence>
+      </ul>
+
+      {onShelf.length === 0 && (
+        <p className="mt-2 text-[12px] text-muted-foreground">
+          Nothing here yet — add from past purchases.
+        </p>
+      )}
+
+      {notOnShelf.length > 0 && (
+        <ul className="mt-2 space-y-px">
+          {notOnShelf.map((p) => (
+            <li
+              key={p.id}
+              className="flex items-center gap-3 border-b border-hairline py-3 opacity-70"
+            >
+              <ProductBottle id={p.vessel} className="h-8 w-auto shrink-0 text-charcoal" />
+              <span className="min-w-0 flex-1">
+                <span className="block truncate text-[13px] text-charcoal">{p.name}</span>
+                <span className="block text-[10px] tracking-[0.16em] text-muted-foreground uppercase">
+                  Past purchase · {p.purchased}
+                </span>
+              </span>
+              <button
+                type="button"
+                onClick={() => onToggleShelf(p.id)}
+                aria-label={`Add ${p.name} to shelf`}
+                className="text-[10px] tracking-[0.16em] text-gold uppercase hover:underline focus-visible:ring-1 focus-visible:ring-gold focus-visible:outline-none"
+              >
+                + Add
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
 }
 

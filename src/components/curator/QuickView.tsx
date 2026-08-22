@@ -2,7 +2,6 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useEffect } from "react";
 
 import { RewardVessel } from "./illustrations";
-import { FitBadge } from "./FitBadge";
 import { MicroSpark } from "./CompactOrb";
 import { rewardIngredients, rewardTerms, type Reward } from "./data";
 import type { Score } from "./scoring";
@@ -89,8 +88,6 @@ export function QuickView({
               </p>
               <h2 className="mt-1 font-serif text-2xl leading-snug">{reward.name}</h2>
               <p className="mt-2 font-serif text-lg">{reward.points.toLocaleString()} pts</p>
-
-              <FitBadge tier={score.tier} segments={score.segments} className="mt-5" />
 
               <button
                 type="button"

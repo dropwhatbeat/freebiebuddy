@@ -264,7 +264,7 @@ export function PointCurator({
                 className="h-[150px] w-[150px]"
                 thinking={busy || Boolean(active) || Boolean(quip)}
                 mood={
-                  !quip && shown?.score.tier === "Okay fit" ? "caution" : "calm"
+                  "calm"
                 }
               />
 
@@ -309,7 +309,7 @@ export function PointCurator({
             body={speech.body}
             caution={speech.caution}
             thinking={busy || Boolean(active) || Boolean(activePick) || Boolean(quip)}
-            mood={!quip && shown?.score.tier === "Okay fit" ? "caution" : "calm"}
+            mood={"calm"}
             readKey={`${activeId ?? "intro"}-${quip ?? ""}-${busy}-${busy ? loadingStep : ""}`}
           />
 

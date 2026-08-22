@@ -3,9 +3,7 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 
 import { RewardCard } from "./RewardCard";
 import { categories, type Reward } from "./data";
-import { tierRank, type Score } from "./scoring";
-
-export { FitBadge } from "./FitBadge";
+import { type Score } from "./scoring";
 
 export interface ScoredReward {
   reward: Reward;
@@ -14,8 +12,7 @@ export interface ScoredReward {
 
 type TypeFilter = "All" | (typeof categories)[number];
 type EligFilter = "All rewards" | "Within my points" | "Gold & Black";
-type FitFilter = "Everything" | "Good and up" | "Best fit only";
-type SortKey = "Best fit first" | "Points: low to high" | "Points: high to low";
+type SortKey = "Points: low to high" | "Points: high to low";
 
 export function Boutique({
   scored,
@@ -40,23 +37,18 @@ export function Boutique({
   const reduced = useReducedMotion();
   const [type, setType] = useState<TypeFilter>("All");
   const [elig, setElig] = useState<EligFilter>("All rewards");
-  const [fit, setFit] = useState<FitFilter>("Everything");
-  const [sort, setSort] = useState<SortKey>("Best fit first");
+  const [sort, setSort] = useState<SortKey>("Points: low to high");
 
   const items = useMemo(() => {
     let list = scored.filter(({ reward }) => (type === "All" ? true : reward.category === type));
     if (elig === "Within my points") list = list.filter((s) => s.score.affordable);
     if (elig === "Gold & Black") list = list.filter((s) => s.reward.tier === "Gold & Black");
-    if (fit === "Best fit only") list = list.filter((s) => s.score.tier === "Best fit");
-    if (fit === "Good and up") list = list.filter((s) => s.score.tier !== "Okay fit");
-    return [...list].sort((a, b) => {
-      if (sort === "Points: low to high") return a.reward.points - b.reward.points;
-      if (sort === "Points: high to low") return b.reward.points - a.reward.points;
-      return (
-        tierRank[a.score.tier] - tierRank[b.score.tier] || a.reward.points - b.reward.points
-      );
-    });
-  }, [scored, type, elig, fit, sort]);
+    return [...list].sort((a, b) =>
+      sort === "Points: high to low"
+        ? b.reward.points - a.reward.points
+        : a.reward.points - b.reward.points,
+    );
+  }, [scored, type, elig, sort]);
 
   return (
     <section id="boutique" className="mt-16 scroll-mt-24">
@@ -82,15 +74,9 @@ export function Boutique({
           onChange={(v) => setElig(v as EligFilter)}
         />
         <FilterGroup
-          label="Fit"
-          value={fit}
-          options={["Everything", "Good and up", "Best fit only"]}
-          onChange={(v) => setFit(v as FitFilter)}
-        />
-        <FilterGroup
           label="Sort"
           value={sort}
-          options={["Best fit first", "Points: low to high", "Points: high to low"]}
+          options={["Points: low to high", "Points: high to low"]}
           onChange={(v) => setSort(v as SortKey)}
         />
         <span className="ml-auto text-xs tracking-[0.14em] text-muted-foreground uppercase">
@@ -131,7 +117,7 @@ export function Boutique({
 
       {items.length === 0 && (
         <p className="mt-12 text-sm text-muted-foreground">
-          No rewards match those filters. Loosen the fit filter to see the full boutique.
+          No rewards match those filters. Loosen them to see the full boutique.
         </p>
       )}
     </section>

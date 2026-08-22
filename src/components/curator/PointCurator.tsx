@@ -252,9 +252,11 @@ export function PointCurator({
             scored={scored}
             redeemed={redeemed}
             onRedeem={handleRedeem}
+            onRemove={handleRemove}
             onExplain={(r) => setActiveId(r.id)}
             activeId={activeId}
           />
+
         </div>
       </div>
     </div>

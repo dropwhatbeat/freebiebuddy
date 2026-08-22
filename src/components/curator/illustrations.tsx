@@ -2,7 +2,9 @@ import type { ReactElement, SVGProps } from "react";
 
 const ink = "currentColor";
 
-/** Minimal editorial line figure holding a small gold reward card. */
+type BottleProps = SVGProps<SVGSVGElement> & { className?: string };
+
+/** Line-drawn vessel for a shelf product. */
 export function ProductBottle({ id, className }: BottleProps & { id: string }) {
   const shapes: Record<string, ReactElement> = {
     cleanser: (

@@ -39,41 +39,10 @@ export function ProfileRail({
   onQuip?: ((line: string) => void) | undefined;
 }) {
   const reduced = useReducedMotion();
+  const [mobileOpen, setMobileOpen] = useState(false);
 
-  if (!open) {
-    return (
-      <div className="sticky top-24 hidden h-fit lg:block">
-        <button
-          type="button"
-          onClick={onToggle}
-          className="flex items-center gap-3 border border-hairline bg-card px-3 py-6 text-[10px] tracking-[0.2em] text-charcoal uppercase [writing-mode:vertical-rl] hover:text-ink focus-visible:ring-1 focus-visible:ring-gold focus-visible:outline-none"
-        >
-          Profile & shelf ›
-        </button>
-      </div>
-    );
-  }
-
-  return (
-    <motion.aside
-      initial={reduced ? false : { opacity: 0, x: -12 }}
-      animate={{ opacity: 1, x: 0 }}
-      className="sticky top-24 h-fit max-h-[calc(100vh-7rem)] overflow-y-auto border border-hairline bg-card"
-    >
-      <div className="flex items-center justify-between border-b border-hairline px-5 py-4">
-        <p className="flex items-center gap-2 text-[10px] tracking-[0.22em] text-gold uppercase">
-          <MicroSpark /> Reading from
-        </p>
-        <button
-          type="button"
-          onClick={onToggle}
-          aria-label="Collapse profile and shelf"
-          className="text-[10px] tracking-[0.18em] text-muted-foreground uppercase hover:text-ink focus-visible:ring-1 focus-visible:ring-gold focus-visible:outline-none"
-        >
-          ‹ Hide
-        </button>
-      </div>
-
+  const body = (
+    <>
       {/* Beauty profile — read-only mini tags */}
       <section className="border-b border-hairline px-5 py-4">
         <h3 className="font-serif text-base">Beauty profile</h3>
@@ -135,9 +104,82 @@ export function ProfileRail({
           />
         ))}
       </section>
-    </motion.aside>
+    </>
+  );
+
+  return (
+    <>
+      {/* Mobile — collapsed by default, expands downward in normal flow */}
+      <div className="lg:hidden">
+        <div className="border border-hairline bg-card">
+          <button
+            type="button"
+            onClick={() => setMobileOpen((o) => !o)}
+            aria-expanded={mobileOpen}
+            className="flex w-full items-center justify-between px-5 py-4 text-left focus-visible:ring-1 focus-visible:ring-gold focus-visible:outline-none"
+          >
+            <span className="flex items-center gap-2 text-[10px] tracking-[0.22em] text-gold uppercase">
+              <MicroSpark /> Profile &amp; shelf
+            </span>
+            <span className="text-[10px] tracking-[0.18em] text-muted-foreground uppercase">
+              {mobileOpen ? "Hide ›" : "Show ›"}
+            </span>
+          </button>
+
+          <AnimatePresence initial={false}>
+            {mobileOpen && (
+              <motion.div
+                key="mobile-rail"
+                initial={reduced ? false : { height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={reduced ? { opacity: 0 } : { height: 0, opacity: 0 }}
+                transition={{ duration: 0.28, ease: "easeOut" }}
+                className="overflow-hidden border-t border-hairline"
+              >
+                {body}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </div>
+
+      {/* Desktop */}
+      {!open ? (
+        <div className="sticky top-24 hidden h-fit lg:block">
+          <button
+            type="button"
+            onClick={onToggle}
+            className="flex items-center gap-3 border border-hairline bg-card px-3 py-6 text-[10px] tracking-[0.2em] text-charcoal uppercase [writing-mode:vertical-rl] hover:text-ink focus-visible:ring-1 focus-visible:ring-gold focus-visible:outline-none"
+          >
+            Profile &amp; shelf ›
+          </button>
+        </div>
+      ) : (
+        <motion.aside
+          initial={reduced ? false : { opacity: 0, x: -12 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="sticky top-24 hidden h-fit max-h-[calc(100vh-7rem)] overflow-y-auto border border-hairline bg-card lg:block"
+        >
+          <div className="flex items-center justify-between border-b border-hairline px-5 py-4">
+            <p className="flex items-center gap-2 text-[10px] tracking-[0.22em] text-gold uppercase">
+              <MicroSpark /> Reading from
+            </p>
+            <button
+              type="button"
+              onClick={onToggle}
+              aria-label="Collapse profile and shelf"
+              className="text-[10px] tracking-[0.18em] text-muted-foreground uppercase hover:text-ink focus-visible:ring-1 focus-visible:ring-gold focus-visible:outline-none"
+            >
+              ‹ Hide
+            </button>
+          </div>
+          {body}
+        </motion.aside>
+      )}
+    </>
   );
 }
+
 
 function ShelfGroup({
   category,

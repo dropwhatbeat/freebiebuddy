@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 
 import { ProductBottle } from "./illustrations";
@@ -114,9 +115,6 @@ export function ProfileRail({
 
       <section className="px-5 py-5">
         <h3 className="font-serif text-lg">Your shelves</h3>
-        <p className="mt-1 text-[12px] text-muted-foreground">
-          Built from Beauty Pass purchases — edit and the scoring re-runs.
-        </p>
 
         {categories.map((cat) => (
           <ShelfGroup
@@ -143,18 +141,19 @@ function ShelfGroup({
   onToggleShelf: (id: string) => void;
   reduced: boolean;
 }) {
+  const [adding, setAdding] = useState(false);
   const items = pastPurchases.filter((p) => p.category === category);
   const onShelf = items.filter((p) => shelf.includes(p.id));
   const notOnShelf = items.filter((p) => !shelf.includes(p.id));
 
   return (
-    <div className="mt-6">
+    <div className="mt-5">
       <p className="flex items-baseline justify-between text-[10px] tracking-[0.2em] text-ink uppercase">
-        {category} shelf
-        <span className="text-muted-foreground">{onShelf.length} items</span>
+        {category} — currently using:
+        <span className="text-muted-foreground">{onShelf.length}</span>
       </p>
 
-      <ul className="mt-2 space-y-px">
+      <ul className="mt-1">
         <AnimatePresence initial={false}>
           {onShelf.map((p) => (
             <motion.li
@@ -164,22 +163,17 @@ function ShelfGroup({
               animate={{ opacity: 1, y: 0 }}
               exit={reduced ? { opacity: 0 } : { opacity: 0, x: -8 }}
               transition={{ duration: 0.2 }}
-              className="flex items-center gap-3 border-b border-hairline py-3"
+              className="group flex items-center gap-2 border-b border-hairline py-1.5"
             >
-              <ProductBottle id={p.vessel} className="h-9 w-auto shrink-0 text-ink" />
-              <span className="min-w-0 flex-1">
-                <span className="block truncate text-[13px] text-ink">{p.name}</span>
-                <span className="block text-[10px] tracking-[0.16em] text-muted-foreground uppercase">
-                  {p.step} · {p.purchased}
-                </span>
-              </span>
+              <ProductBottle id={p.vessel} className="h-6 w-auto shrink-0 text-ink" />
+              <span className="min-w-0 flex-1 truncate text-[12px] text-ink">{p.name}</span>
               <button
                 type="button"
                 onClick={() => onToggleShelf(p.id)}
                 aria-label={`Remove ${p.name} from shelf`}
-                className="text-[10px] tracking-[0.16em] text-muted-foreground uppercase hover:text-ink focus-visible:ring-1 focus-visible:ring-gold focus-visible:outline-none"
+                className="text-[10px] tracking-[0.16em] text-muted-foreground uppercase opacity-0 transition-opacity group-hover:opacity-100 hover:text-ink focus-visible:opacity-100 focus-visible:ring-1 focus-visible:ring-gold focus-visible:outline-none"
               >
-                Remove
+                ×
               </button>
             </motion.li>
           ))}
@@ -187,40 +181,53 @@ function ShelfGroup({
       </ul>
 
       {onShelf.length === 0 && (
-        <p className="mt-2 text-[12px] text-muted-foreground">
-          Nothing here yet — add from past purchases.
-        </p>
+        <p className="mt-1 text-[11px] text-muted-foreground">Nothing here yet.</p>
       )}
 
-      {notOnShelf.length > 0 && (
-        <ul className="mt-2 space-y-px">
-          {notOnShelf.map((p) => (
-            <li
-              key={p.id}
-              className="flex items-center gap-3 border-b border-hairline py-3 opacity-70"
-            >
-              <ProductBottle id={p.vessel} className="h-8 w-auto shrink-0 text-charcoal" />
-              <span className="min-w-0 flex-1">
-                <span className="block truncate text-[13px] text-charcoal">{p.name}</span>
-                <span className="block text-[10px] tracking-[0.16em] text-muted-foreground uppercase">
-                  Past purchase · {p.purchased}
-                </span>
-              </span>
-              <button
-                type="button"
-                onClick={() => onToggleShelf(p.id)}
-                aria-label={`Add ${p.name} to shelf`}
-                className="text-[10px] tracking-[0.16em] text-gold uppercase hover:underline focus-visible:ring-1 focus-visible:ring-gold focus-visible:outline-none"
+      <AnimatePresence initial={false}>
+        {adding && notOnShelf.length > 0 && (
+          <motion.ul
+            initial={reduced ? false : { opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="overflow-hidden"
+          >
+            {notOnShelf.map((p) => (
+              <li
+                key={p.id}
+                className="flex items-center gap-2 border-b border-hairline py-1.5"
               >
-                + Add
-              </button>
-            </li>
-          ))}
-        </ul>
+                <ProductBottle id={p.vessel} className="h-6 w-auto shrink-0 text-charcoal" />
+                <span className="min-w-0 flex-1 truncate text-[12px] text-charcoal">
+                  {p.name}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => onToggleShelf(p.id)}
+                  aria-label={`Add ${p.name} to shelf`}
+                  className="text-[10px] tracking-[0.16em] text-gold uppercase hover:underline focus-visible:ring-1 focus-visible:ring-gold focus-visible:outline-none"
+                >
+                  + Add
+                </button>
+              </li>
+            ))}
+          </motion.ul>
+        )}
+      </AnimatePresence>
+
+      {notOnShelf.length > 0 && (
+        <button
+          type="button"
+          onClick={() => setAdding((v) => !v)}
+          className="mt-2 border border-hairline px-2 py-1 text-[9px] tracking-[0.18em] text-charcoal uppercase transition-colors hover:border-gold hover:text-ink focus-visible:ring-1 focus-visible:ring-gold focus-visible:outline-none"
+        >
+          {adding ? "Close" : `+ Add from past purchases (${notOnShelf.length})`}
+        </button>
       )}
     </div>
   );
 }
+
 
 function Chip({
   active,

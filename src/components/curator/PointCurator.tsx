@@ -22,6 +22,8 @@ import { recommendRewards } from "@/lib/curator.functions";
 import { rulePicks, ruleIntro, type RecommendResult } from "@/lib/curator-prompt";
 
 
+type AiScored = ScoredReward & { aiRoutine: string; aiCaution?: string };
+
 export function PointCurator({
   points,
   redeemed,
@@ -108,7 +110,7 @@ export function PointCurator({
     } satisfies RecommendResult);
 
   /** AI picks, hydrated with catalogue data and the local meter. */
-  const picks: ScoredReward[] = useMemo(() => {
+  const picks: AiScored[] = useMemo(() => {
     const byId = new Map(scored.map((s) => [s.reward.id, s]));
     return result.picks
       .map((p) => {

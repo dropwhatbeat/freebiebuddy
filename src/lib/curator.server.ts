@@ -33,7 +33,7 @@ interface RawInput {
   enjoys: string[];
   shelf: string[];
   points: number;
-  wish?: string | null;
+  wish?: string | null | undefined;
 }
 
 export async function recommendRewardsWithAi(raw: RawInput): Promise<RecommendResult> {

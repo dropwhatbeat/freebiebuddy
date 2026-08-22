@@ -1,4 +1,4 @@
-import { defineMcp } from "@lovable.dev/mcp-js";
+import { defineMcp, type AnyToolDefinition } from "@lovable.dev/mcp-js";
 
 import getBeautyProfileTool from "./tools/get-beauty-profile";
 import getRewardTool from "./tools/get-reward";

@@ -84,6 +84,16 @@ export function ProfileRail({
           );
         })}
 
+        <div className="mt-2 flex flex-wrap items-center gap-1.5">
+          <span className="text-[9px] tracking-[0.18em] text-muted-foreground uppercase">
+            Fragrance
+          </span>
+          <Tag>{defaultProfile.fragrance.type}</Tag>
+          {defaultProfile.fragrance.families.map((f) => (
+            <Tag key={f}>{f}</Tag>
+          ))}
+        </div>
+
         <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground">
           {gaps.length
             ? `${gaps.length} concern${gaps.length > 1 ? "s" : ""} your shelves lack today.`
@@ -100,6 +110,36 @@ export function ProfileRail({
           View my beauty profile ›
         </button>
       </section>
+
+      {/* Skincredible scan — measured evidence */}
+      <section className="border-b border-hairline px-5 py-4">
+        <div className="flex items-baseline justify-between">
+          <h3 className="font-serif text-base">Skincredible scan</h3>
+          <span className="font-serif text-lg text-gold">{defaultProfile.scan.score}</span>
+        </div>
+
+        <div className="mt-3 space-y-2">
+          {defaultProfile.scan.metrics.map((m) => (
+            <div key={m.title} title={m.note}>
+              <div className="flex items-baseline justify-between text-[10px] tracking-[0.12em] uppercase">
+                <span className="text-muted-foreground">{m.title}</span>
+                <span className={m.status === "good" ? "text-ink" : "text-gold"}>{m.value}</span>
+              </div>
+              <div className="mt-1 h-[3px] w-full bg-hairline">
+                <div
+                  className={`h-full ${m.status === "good" ? "bg-ink/70" : "bg-gold"}`}
+                  style={{ width: `${m.value}%` }}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <p className="mt-3 text-[10px] leading-relaxed text-muted-foreground">
+          Scanned {defaultProfile.scan.date} · {defaultProfile.scan.store}
+        </p>
+      </section>
+
 
       <section className="px-5 py-5">
         <h3 className="font-serif text-lg">Your shelves</h3>

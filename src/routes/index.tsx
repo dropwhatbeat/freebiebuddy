@@ -65,7 +65,7 @@ function Index() {
       <main>
         <PointsBanner
           points={available}
-          expiring={320}
+          expiring={expiringLeft}
           expiryDate="31 Aug 2027"
           redeemed={bag}
           onRemove={handleRemove}

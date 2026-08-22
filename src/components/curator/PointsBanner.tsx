@@ -49,7 +49,7 @@ export function PointsBanner({
         <div className="flex flex-wrap items-start justify-between gap-8">
           <div>
             <p className="text-[11px] tracking-[0.28em] text-charcoal uppercase">
-              Welcome, Michelle
+              Welcome, Emily
             </p>
 
             <div className="mt-6 flex items-start gap-10">

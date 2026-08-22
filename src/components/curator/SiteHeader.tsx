@@ -18,7 +18,7 @@ export function SiteHeader() {
             Gold Beauty Pass
           </span>
           <span className="h-3 w-px bg-hairline" aria-hidden="true" />
-          <span>Michelle, Singapore</span>
+          <span>Emily, Singapore</span>
         </div>
       </div>
     </header>

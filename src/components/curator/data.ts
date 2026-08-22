@@ -307,7 +307,7 @@ export const defaultShelf = [
 
 
 export const defaultProfile = {
-  name: "Michelle",
+  name: "Emily",
   skinType: "Combination" as SkinType,
   concerns: [
     "hydration",

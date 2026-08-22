@@ -1,5 +1,6 @@
 import {
   concerns as allConcerns,
+  defaultProfile,
   pastPurchases,
   rewardCatalogue,
   rewardIngredients,

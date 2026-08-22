@@ -58,6 +58,38 @@ export function buildEvidence(input: RecommendRequest) {
   return { scored, gaps };
 }
 
+const stripHtml = (s: string) =>
+  s
+    .replace(/<br\s*\/?>/gi, " ")
+    .replace(/<[^>]*>/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+
+function rewardDetail(reward: (typeof rewardCatalogue)[number], score: ReturnType<typeof scoreReward>) {
+  const actives = rewardIngredients[reward.id];
+  const lines = [
+    `- ${reward.id} · ${reward.brand} — ${reward.name}`,
+    `  category: ${reward.category} | points: ${reward.points} | eligibility: ${reward.tier}`,
+    `  covers concerns: ${reward.covers.map(label).join(", ") || "none tagged"}`,
+    `  routine placement: ${reward.routine}`,
+  ];
+  if (reward.blurb) lines.push(`  editor's note: ${stripHtml(reward.blurb)}`);
+  if (actives?.length)
+    lines.push(`  key actives: ${actives.map((a) => `${a.name} — ${a.note}`).join(" | ")}`);
+  if (reward.pairsWith?.length) lines.push(`  layers with shelf items: ${reward.pairsWith.join(", ")}`);
+  if (reward.avoidFor?.length)
+    lines.push(`  poor match for: ${reward.avoidFor.join(", ")} skin${reward.avoidReason ? ` — ${reward.avoidReason}` : ""}`);
+  if (reward.conflictsWith?.length)
+    lines.push(`  clashes with actives: ${reward.conflictsWith.join(", ")}${reward.conflictReason ? ` — ${reward.conflictReason}` : ""}`);
+  if (reward.caution) lines.push(`  caution: ${reward.caution}`);
+  lines.push(`  rule fit: ${score.tier} — ${score.headline}`);
+  lines.push(`  facts: ${score.lines.map((l) => `${l.label}: ${l.detail}`).join(" | ")}`);
+  lines.push(score.affordable ? `  affordable: yes` : `  affordable: no (${score.shortBy} pts short)`);
+  return lines.join("\n");
+}
+
+const DETAILED_COUNT = 18;
+
 export function buildBrief(input: RecommendRequest) {
   const { scored, gaps } = buildEvidence(input);
 
@@ -65,20 +97,18 @@ export function buildBrief(input: RecommendRequest) {
     .filter((p) => input.shelf.includes(p.id))
     .map(
       (p) =>
-        `- ${p.id} · ${p.brand} ${p.name} (${p.category}) — covers ${p.covers.map(label).join(", ") || "nothing specific"}; actives: ${p.actives?.join(", ") || "none"}`,
+        `- ${p.id} · ${p.brand} — ${p.name} (${p.category}) — covers ${p.covers.map(label).join(", ") || "nothing specific"}; actives: ${p.actives?.join(", ") || "none listed"}`,
     )
     .join("\n");
 
-  const catalogueLines = scored
-    .map(({ reward, score }) =>
-      [
-        `- ${reward.id} · ${reward.brand} ${reward.name} (${reward.category}, ${reward.points} pts, ${reward.tier})`,
-        `  covers: ${reward.covers.map(label).join(", ")}`,
-        `  routine: ${reward.routine}`,
-        `  rule fit: ${score.tier} — ${score.headline}`,
-        `  facts: ${score.lines.map((l) => `${l.label}: ${l.detail}`).join(" | ")}`,
-        score.affordable ? `  affordable: yes` : `  affordable: no (${score.shortBy} pts short)`,
-      ].join("\n"),
+  const detailed = scored.slice(0, DETAILED_COUNT);
+  const rest = scored.slice(DETAILED_COUNT);
+
+  const catalogueLines = detailed.map(({ reward, score }) => rewardDetail(reward, score)).join("\n");
+  const restLines = rest
+    .map(
+      ({ reward, score }) =>
+        `- ${reward.id} · ${reward.brand} ${reward.name} (${reward.category}, ${reward.points} pts, ${reward.tier}) — covers ${reward.covers.map(label).join(", ") || "none"}; rule fit ${score.tier}${score.affordable ? "" : `; ${score.shortBy} pts short`}`,
     )
     .join("\n");
 
@@ -93,9 +123,10 @@ export function buildBrief(input: RecommendRequest) {
     `CURRENT SHELF (what she is using now)`,
     shelfLines || "- (empty shelf)",
     ``,
-    `REWARD CATALOGUE WITH RULE-SCORED EVIDENCE`,
+    `REWARD CATALOGUE — TOP CANDIDATES IN FULL DETAIL`,
     catalogueLines,
     ``,
+    restLines ? `REST OF THE CATALOGUE (summary only — still selectable)\n${restLines}\n` : ``,
     input.wish?.trim()
       ? `WHAT SHE ASKED FOR, IN HER OWN WORDS: "${input.wish.trim()}" — weight this heavily; if nothing in the catalogue matches it, say so honestly in the intro and pick the closest options.`
       : `She has not typed a specific request; recommend from her profile and shelf gaps.`,
@@ -103,18 +134,23 @@ export function buildBrief(input: RecommendRequest) {
 }
 
 export const SYSTEM_PROMPT = `You are Freebie Buddy, a warm, concise beauty-rewards curator for a Sephora Beauty Pass prototype.
-Pick the three best rewards for this member and explain each in the first person ("I'd grab...", "I'd skip...").
+Recommend the rewards that genuinely earn a place for this member and explain each in the first person ("I'd grab...", "I'd skip...").
+
+How many picks:
+- Return between 1 and 6 picks — however many actually fit. Never pad.
+- A narrow request ("something for my frizzy ends") usually deserves 1-2 picks.
+- A broad request or concerns spanning skin, hair and makeup can justify 4-6.
+- Quality over count: one excellent pick beats three mediocre ones.
 
 Rules:
-- Choose ONLY reward ids that appear in the catalogue.
+- Choose ONLY reward ids that appear in the catalogue (detailed or summary list).
 - Prefer rewards that close a concern her current shelf does not answer; if nothing is missing, pick on skin type and the categories she enjoys.
 - Prefer rewards she can afford with her points. Never recommend one that clashes with her skin type or an active on her shelf unless she explicitly asked for it — and then label it "Not for your skin".
-- Spread picks across categories (skin/hair/makeup) when her concerns span them.
-- Use the supplied rule-scored facts as ground truth. Do not invent ingredients, conflicts, or claims.
-- reason: one or two short sentences, personal and specific, referencing her shelf or request.
-- routine: one short sentence on where it slots into her routine.
+- Use the supplied product details (editor's note, key actives, routine placement, cautions) and rule-scored facts as ground truth. Do not invent ingredients, conflicts, or claims.
+- reason: two or three short sentences, personal and specific. Every reason MUST name at least one concrete detail — a named active or ingredient, a product already on her shelf, or her typed request.
+- routine: one short sentence on where it slots into her routine, grounded in the product's routine placement.
 - caution: only when there is a real thing to watch, otherwise null.
-- intro: one or two sentences from you summarising why these three, referencing her request if she made one.`;
+- intro: one or two sentences from you summarising this set — do not assume a fixed number of picks; reference her request if she made one.`;
 
 /** Deterministic picks used before/instead of the AI answer. */
 export function rulePicks(input: RecommendRequest, limit = 3): AiPick[] {

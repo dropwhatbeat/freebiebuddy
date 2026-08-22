@@ -137,11 +137,11 @@ export function Boutique({
                   {reward.tier}
                 </p>
 
-                <p className="mt-4 min-h-[3.5rem] text-[13px] leading-relaxed text-charcoal">
+                <p className="mt-4 text-[13px] leading-relaxed text-charcoal">
                   {score.headline}
                 </p>
 
-                <ul className="mt-3 space-y-1.5 border-t border-hairline pt-3 text-[12px] leading-relaxed text-muted-foreground opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-within:opacity-100">
+                <ul className="mt-3 space-y-1.5 border-t border-hairline pt-3 text-[12px] leading-relaxed text-muted-foreground transition-opacity duration-300">
                   {score.lines.map((l) => (
                     <li key={l.label} className="flex gap-2">
                       <span

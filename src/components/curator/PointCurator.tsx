@@ -460,7 +460,7 @@ export function PointCurator({
 
           <div className="mt-14 grid grid-cols-1 gap-10 lg:grid-cols-[300px_1fr]">
             {/* mascot column */}
-            <div className="lg:sticky lg:top-24 lg:self-start">
+            <div id="genie-anchor" className="lg:sticky lg:top-24 lg:self-start">
               <div className="flex items-start gap-4">
                 <GenieMascot className="h-40 w-24 shrink-0" thinking={thinking} />
                 <div className="flex-1">

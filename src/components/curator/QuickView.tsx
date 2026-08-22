@@ -68,8 +68,17 @@ export function QuickView({
             </button>
 
             <div className="flex items-center justify-center bg-secondary/40 p-12">
-              <RewardVessel variant={reward.vessel} className="h-32 w-auto text-ink" />
+              {reward.image ? (
+                <img
+                  src={reward.image}
+                  alt={`${reward.brand} ${reward.name}`}
+                  className="h-56 w-auto object-contain"
+                />
+              ) : (
+                <RewardVessel variant={reward.vessel} className="h-32 w-auto text-ink" />
+              )}
             </div>
+
 
             <div className="p-8 md:p-10">
               <p className="text-[10px] tracking-[0.2em] text-muted-foreground uppercase">
@@ -130,7 +139,17 @@ export function QuickView({
                 </ul>
               </section>
 
+              {reward.blurb && (
+                <section className="mt-6 border-t border-hairline pt-6">
+                  <p className="text-[10px] tracking-[0.22em] text-muted-foreground uppercase">
+                    Editor's note
+                  </p>
+                  <p className="mt-3 text-[12px] leading-relaxed text-charcoal">{reward.blurb}</p>
+                </section>
+              )}
+
               <section className="mt-6 border-t border-hairline pt-6">
+
                 <p className="text-[10px] tracking-[0.22em] text-muted-foreground uppercase">
                   Key actives
                 </p>

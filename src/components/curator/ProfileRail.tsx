@@ -158,7 +158,7 @@ export function ProfileRail({
         <motion.aside
           initial={reduced ? false : { opacity: 0, x: -12 }}
           animate={{ opacity: 1, x: 0 }}
-          className="sticky top-24 hidden h-fit max-h-[calc(100vh-7rem)] overflow-y-auto border border-hairline bg-card lg:block"
+          className="sticky top-24 hidden h-fit max-h-[calc(100vh-7rem)] w-[300px] shrink-0 overflow-x-hidden overflow-y-auto border border-hairline bg-card lg:block"
         >
           <div className="flex items-center justify-between border-b border-hairline px-5 py-4">
             <p className="flex items-center gap-2 text-[10px] tracking-[0.22em] text-gold uppercase">
@@ -226,7 +226,7 @@ function ShelfGroup({
         onClick={nudge}
         role="presentation"
       >
-        <div className="flex min-h-[52px] items-end gap-1 px-1">
+        <div className="shelf-scroll flex min-h-[52px] items-end gap-1 overflow-x-auto overflow-y-visible px-1 pt-16">
           <AnimatePresence initial={false}>
             {onShelf.map((p) => (
               <motion.div
@@ -236,7 +236,7 @@ function ShelfGroup({
                 animate={{ opacity: 1, y: 0 }}
                 exit={reduced ? { opacity: 0 } : { opacity: 0, x: -10, rotate: -25 }}
                 transition={{ type: "spring", stiffness: 420, damping: 18 }}
-                className="group relative"
+                className="group relative shrink-0"
               >
                 <div
                   className={`relative transition-transform duration-200 group-hover:-translate-y-1 ${

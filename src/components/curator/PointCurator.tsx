@@ -28,10 +28,11 @@ export function PointCurator({
 }) {
   const reduced = useReducedMotion();
   const [railOpen, setRailOpen] = useState(true);
-  const [skinType, setSkinType] = useState<SkinType>(defaultProfile.skinType);
-  const [selected, setSelected] = useState<ConcernId[]>(defaultProfile.concerns);
+  const skinType: SkinType = defaultProfile.skinType;
+  const [selected] = useState<ConcernId[]>(defaultProfile.concerns);
   const [shelf, setShelf] = useState<string[]>(defaultShelf);
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [quip, setQuip] = useState<string | null>(null);
 
   const gaps = useMemo(() => openGaps(selected, shelf), [selected, shelf]);
 
@@ -97,9 +98,6 @@ export function PointCurator({
   const handleRemove = (r: Reward) => onRemove(r.id);
 
 
-  const toggleConcern = (c: ConcernId) =>
-    setSelected((prev) => (prev.includes(c) ? prev.filter((x) => x !== c) : [...prev, c]));
-
   const toggleShelf = (id: string) =>
     setShelf((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
 
@@ -112,13 +110,16 @@ export function PointCurator({
           open={railOpen}
           onToggle={() => setRailOpen((o) => !o)}
           skinType={skinType}
-          onSkinType={setSkinType}
           selected={selected}
-          onToggleConcern={toggleConcern}
           shelf={shelf}
           onToggleShelf={toggleShelf}
           gaps={gaps}
+          onQuip={(line) => {
+            setQuip(line);
+            window.setTimeout(() => setQuip(null), 5000);
+          }}
         />
+
 
         <div className="min-w-0">
           {/* Hero */}
@@ -144,24 +145,35 @@ export function PointCurator({
             <div className="mt-10 grid gap-8 border-t border-hairline pt-10 lg:grid-cols-[150px_minmax(0,1fr)]">
               <CompactOrb
                 className="h-[150px] w-[150px]"
-                thinking={Boolean(active)}
-                mood={shown?.score.tier === "Not for your skin" ? "caution" : "calm"}
+                thinking={Boolean(active) || Boolean(quip)}
+                mood={
+                  !quip && shown?.score.tier === "Not for your skin" ? "caution" : "calm"
+                }
               />
 
               {shown && (
                 <CuratorSpeech
-                  title={active ? `Curator · ${shown.reward.name}` : `Curator · why these picks`}
-                  body={
-                    active
-                      ? `${shown.score.headline} ${shown.reward.routine}`
-                      : gaps.length
-                        ? `${picks.length} rewards below close what your shelves are missing — ${gapLabels}. Anything that clashes with your skin type or an active you already use is labelled, not recommended.`
-                        : `Nothing is missing, so these ${picks.length} are ranked on ${skinType.toLowerCase()} skin condition and the categories you redeem most.`
+                  title={
+                    quip
+                      ? "Curator · ahem"
+                      : active
+                        ? `Curator · ${shown.reward.name}`
+                        : `Curator · why these picks`
                   }
-                  caution={active ? shown.reward.caution : undefined}
+                  body={
+                    quip
+                      ? quip
+                      : active
+                        ? `${shown.score.headline} ${shown.reward.routine}`
+                        : gaps.length
+                          ? `${picks.length} rewards below close what your shelves are missing — ${gapLabels}. Anything that clashes with your skin type or an active you already use is labelled, not recommended.`
+                          : `Nothing is missing, so these ${picks.length} are ranked on ${skinType.toLowerCase()} skin condition and the categories you redeem most.`
+                  }
+                  caution={!quip && active ? shown.reward.caution : undefined}
                   className="self-start"
                 />
               )}
+
             </div>
 
             <div className="mt-10 flex items-end justify-between border-b border-hairline pb-4">

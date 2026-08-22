@@ -90,12 +90,13 @@ export function GenieMascot({
         {/* serum column rising and falling */}
         <motion.rect
           x="60.5"
+          y="96"
           width="19"
+          height="64"
           className="fill-gold-soft"
-          animate={reduced ? { y: 120, height: 40 } : { y: [128, 100, 128], height: [32, 60, 32] }}
+          animate={reduced ? {} : { scaleY: [0.5, 1, 0.5] }}
+          style={{ transformOrigin: "70px 160px" }}
           transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
-          y={120}
-          height={40}
         />
 
         {/* gold droplet at the tip */}

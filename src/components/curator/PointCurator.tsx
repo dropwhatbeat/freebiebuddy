@@ -3,7 +3,9 @@ import { motion, useReducedMotion } from "motion/react";
 
 import { CompactOrb, CuratorSpeech, MicroSpark } from "./CompactOrb";
 import { ProfileRail } from "./ProfileRail";
-import { Boutique, FitBadge, type ScoredReward } from "./Boutique";
+import { Boutique, type ScoredReward } from "./Boutique";
+import { RewardCard } from "./RewardCard";
+import { QuickView } from "./QuickView";
 import {
   defaultProfile,
   defaultShelf,
@@ -32,6 +34,7 @@ export function PointCurator({
   const [selected] = useState<ConcernId[]>(defaultProfile.concerns);
   const [shelf, setShelf] = useState<string[]>(defaultShelf);
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [quickId, setQuickId] = useState<string | null>(null);
   const [quip, setQuip] = useState<string | null>(null);
 
   const gaps = useMemo(() => openGaps(selected, shelf), [selected, shelf]);
@@ -83,6 +86,7 @@ export function PointCurator({
   }, [ranked]);
 
   const active = activeId ? scored.find((s) => s.reward.id === activeId) : undefined;
+  const quick = quickId ? scored.find((s) => s.reward.id === quickId) : undefined;
   const shown = active ?? picks[0];
 
   const gapLabels = gaps
@@ -215,11 +219,24 @@ export function PointCurator({
             onRedeem={handleRedeem}
             onRemove={handleRemove}
             onExplain={(r) => setActiveId(r.id)}
+            onQuickView={(r) => setQuickId(r.id)}
             activeId={activeId}
           />
 
         </div>
       </div>
+
+      <QuickView
+        reward={quick?.reward ?? null}
+        score={quick?.score ?? null}
+        done={quick ? redeemed.includes(quick.reward.id) : false}
+        onToggleBag={() => {
+          if (!quick) return;
+          if (redeemed.includes(quick.reward.id)) handleRemove(quick.reward);
+          else handleRedeem(quick.reward);
+        }}
+        onClose={() => setQuickId(null)}
+      />
     </div>
   );
 }

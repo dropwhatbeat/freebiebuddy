@@ -17,8 +17,7 @@ import {
   type Reward,
   type SkinType,
 } from "./data";
-import { openGaps, scoreReward, tierRank } from "./scoring";
-import { concerns as allConcerns } from "./data";
+import { openGaps, scoreReward } from "./scoring";
 import { recommendRewards } from "@/lib/curator.functions";
 import { rulePicks, ruleIntro, type RecommendResult } from "@/lib/curator-prompt";
 
@@ -78,9 +77,6 @@ export function PointCurator({
       }) as Promise<RecommendResult>,
     onSuccess: () => setShelfDirty(false),
   });
-
-  const pointsRef = useRef(points);
-  pointsRef.current = points;
 
   // First read on load.
   const started = useRef(false);
@@ -160,7 +156,11 @@ export function PointCurator({
 
 
   const toggleShelf = (id: string) =>
-    setShelf((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+    setShelf((prev) => {
+      const next = prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id];
+      setShelfDirty(true);
+      return next;
+    });
 
   return (
     <div className="mx-auto max-w-7xl px-8 pt-10 pb-14">

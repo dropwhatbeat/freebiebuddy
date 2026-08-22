@@ -98,22 +98,21 @@ export function CompactOrb({
           <circle cx="66" cy="74" r="3" />
           <circle cx="94" cy="74" r="3" />
         </g>
-        {thinking && !reduced ? (
+        <path
+          d={mood === "caution" ? "M70 96c6-5 14-5 20 0" : "M70 92c6 6 14 6 20 0"}
+          className="stroke-ink"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          fill="none"
+        />
+        {thinking && !reduced && (
           <ellipse
             cx="80"
-            cy="94"
-            rx="6"
-            ry="4.5"
-            className="stroke-ink orb-mouth-think"
-            strokeWidth="1.5"
-            fill="none"
-          />
-        ) : (
-          <path
-            d={mood === "caution" ? "M70 96c6-5 14-5 20 0" : "M70 92c6 6 14 6 20 0"}
-            className="stroke-ink"
-            strokeWidth="1.5"
-            strokeLinecap="round"
+            cy="100"
+            rx="5"
+            ry="3"
+            className="stroke-gold orb-mouth-sway"
+            strokeWidth="1.2"
             fill="none"
           />
         )}

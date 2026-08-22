@@ -198,3 +198,15 @@
   .shelf-wobble, .bottle-jiggle { animation: none; }
 }
 
+
+/* Slim horizontal scrollbar for each product shelf */
+.shelf-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in oklab, currentColor 20%, transparent) transparent;
+}
+.shelf-scroll::-webkit-scrollbar {
+  height: 4px;
+}
+.shelf-scroll::-webkit-scrollbar-thumb {
+  background: color-mix(in oklab, currentColor 20%, transparent);
+}

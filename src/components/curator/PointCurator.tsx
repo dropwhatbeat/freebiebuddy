@@ -71,16 +71,17 @@ export function PointCurator({
 
   const suggestions = useMemo(() => {
     const scoreGap = (r: Reward) => r.covers.filter((c) => gaps.includes(c)).length;
+    const byPreference = [...rewardCatalogue]
+      .filter((r) => r.covers.some((c) => selected.includes(c)) || r.covers.includes("hydration"))
+      .sort((a, b) => a.points - b.points);
     if (gaps.length) {
-      return [...rewardCatalogue]
+      const closers = [...rewardCatalogue]
         .filter((r) => scoreGap(r) > 0)
-        .sort((a, b) => scoreGap(b) - scoreGap(a) || a.points - b.points)
-        .slice(0, 3);
+        .sort((a, b) => scoreGap(b) - scoreGap(a) || a.points - b.points);
+      const filler = byPreference.filter((r) => !closers.some((c) => c.id === r.id));
+      return [...closers, ...filler].slice(0, 3);
     }
-    return [...rewardCatalogue]
-      .filter((r) => r.covers.some((c) => selected.includes(c)))
-      .sort((a, b) => a.points - b.points)
-      .slice(0, 3);
+    return byPreference.slice(0, 3);
   }, [gaps, selected]);
 
   /* brief "thinking" pulse whenever the inputs change */

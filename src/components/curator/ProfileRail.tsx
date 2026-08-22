@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { toast } from "sonner";
 
@@ -196,7 +197,19 @@ function ShelfGroup({
 }) {
   const [adding, setAdding] = useState(false);
   const [wobble, setWobble] = useState(0);
+  const [hovered, setHovered] = useState<{ id: string; x: number; y: number } | null>(null);
+  const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const clicks = useRef<number[]>([]);
+
+  const openLabel = (id: string, el: HTMLElement) => {
+    if (hoverTimer.current) clearTimeout(hoverTimer.current);
+    const r = el.getBoundingClientRect();
+    setHovered({ id, x: r.left + r.width / 2, y: r.top });
+  };
+  const closeLabel = () => {
+    if (hoverTimer.current) clearTimeout(hoverTimer.current);
+    hoverTimer.current = setTimeout(() => setHovered(null), 120);
+  };
   const items = pastPurchases.filter((p) => p.category === category);
   const onShelf = items.filter((p) => shelf.includes(p.id));
   const notOnShelf = items.filter((p) => !shelf.includes(p.id));
@@ -226,7 +239,7 @@ function ShelfGroup({
         onClick={nudge}
         role="presentation"
       >
-        <div className="shelf-scroll flex min-h-[52px] items-end gap-1 overflow-x-auto overflow-y-visible px-1 pt-16">
+        <div className="shelf-scroll flex min-h-[52px] items-end gap-1 overflow-x-auto px-1 pt-2">
           <AnimatePresence initial={false}>
             {onShelf.map((p) => (
               <motion.div
@@ -237,6 +250,11 @@ function ShelfGroup({
                 exit={reduced ? { opacity: 0 } : { opacity: 0, x: -10, rotate: -25 }}
                 transition={{ type: "spring", stiffness: 420, damping: 18 }}
                 className="group relative shrink-0"
+                onMouseEnter={(e) => openLabel(p.id, e.currentTarget)}
+                onMouseLeave={closeLabel}
+                onFocus={(e) => openLabel(p.id, e.currentTarget)}
+                onBlur={closeLabel}
+                tabIndex={0}
               >
                 <div
                   className={`relative transition-transform duration-200 group-hover:-translate-y-1 ${
@@ -258,24 +276,6 @@ function ShelfGroup({
                   )}
                 </div>
 
-                {/* hover label + remove */}
-                <div className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-1 w-36 -translate-x-1/2 border border-hairline bg-card px-2 py-1.5 opacity-0 shadow-sm transition-opacity group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100">
-                  <p className="text-[9px] tracking-[0.16em] text-muted-foreground uppercase">
-                    {p.brand}
-                  </p>
-                  <p className="text-[11px] leading-tight text-ink">{p.name}</p>
-
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onToggleShelf(p.id);
-                    }}
-                    className="mt-1 text-[9px] tracking-[0.16em] text-muted-foreground uppercase hover:text-ink focus-visible:ring-1 focus-visible:ring-gold focus-visible:outline-none"
-                  >
-                    × Remove
-                  </button>
-                </div>
               </motion.div>
             ))}
           </AnimatePresence>
@@ -284,6 +284,42 @@ function ShelfGroup({
             <div className="h-10 w-7 rounded-sm border border-dashed border-hairline" />
           )}
         </div>
+
+        {/* floating hover label + remove (escapes shelf + sidebar clipping) */}
+        {hovered &&
+          typeof document !== "undefined" &&
+          (() => {
+            const p = onShelf.find((x) => x.id === hovered.id);
+            if (!p) return null;
+            return createPortal(
+              <div
+                className="pointer-events-auto fixed z-[80] w-40 -translate-x-1/2 -translate-y-full border border-hairline bg-card px-2 py-1.5 shadow-md"
+                style={{ left: hovered.x, top: hovered.y - 6 }}
+                onMouseEnter={() => {
+                  if (hoverTimer.current) clearTimeout(hoverTimer.current);
+                }}
+                onMouseLeave={closeLabel}
+              >
+                <p className="text-[9px] tracking-[0.16em] text-muted-foreground uppercase">
+                  {p.brand}
+                </p>
+                <p className="text-[11px] leading-tight text-ink">{p.name}</p>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onToggleShelf(p.id);
+                    setHovered(null);
+                  }}
+                  className="mt-1 text-[9px] tracking-[0.16em] text-muted-foreground uppercase hover:text-ink focus-visible:ring-1 focus-visible:ring-gold focus-visible:outline-none"
+                >
+                  × Remove
+                </button>
+              </div>,
+              document.body,
+            );
+          })()}
+
 
         {/* plank */}
         <div className="h-px w-full bg-ink/70" />

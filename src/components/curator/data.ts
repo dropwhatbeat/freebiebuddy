@@ -1005,6 +1005,27 @@ const rawRewardCatalogue: Reward[] = [
   },
 ];
 
+/**
+ * Maps catalogue coverage onto the concern vocabulary used by the Beauty Profile
+ * (blackheads, fine lines, dandruff, hair dryness) so gap detection stays accurate.
+ */
+const concernAliases: Partial<Record<ConcernId, ConcernId[]>> = {
+  pores: ["blackheads"],
+  texture: ["blackheads"],
+  firmness: ["lines"],
+  scalp: ["dandruff"],
+};
+
+export const rewardCatalogue: Reward[] = rawRewardCatalogue.map((reward) => {
+  const covers = new Set<ConcernId>(reward.covers);
+  for (const id of reward.covers) {
+    for (const alias of concernAliases[id] ?? []) covers.add(alias);
+    // Hair products that hydrate answer hair dryness, not facial hydration.
+    if (reward.category === "Hair" && id === "hydration") covers.add("hairdryness");
+  }
+  return { ...reward, covers: [...covers] };
+});
+
 export interface Ingredient {
   name: string;
   note: string;

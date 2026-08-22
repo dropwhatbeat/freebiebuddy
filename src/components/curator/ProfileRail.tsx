@@ -75,7 +75,7 @@ export function ProfileRail({
 
         <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground">
           {gaps.length
-            ? `${gaps.length} concern${gaps.length > 1 ? "s" : ""} with nothing on your shelves.`
+            ? `${gaps.length} concern${gaps.length > 1 ? "s" : ""} your shelves lack today.`
             : "Your shelves answer every concern you've flagged."}
         </p>
 

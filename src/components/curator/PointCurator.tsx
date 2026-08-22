@@ -3,7 +3,7 @@ import { motion, useReducedMotion } from "motion/react";
 import { useMutation } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 
-import { CompactOrb, CuratorSpeech, MicroSpark } from "./CompactOrb";
+import { CompactOrb, MicroSpark } from "./CompactOrb";
 import { BuddyBar } from "./BuddyBar";
 import { ProfileRail } from "./ProfileRail";
 import { Boutique, type ScoredReward } from "./Boutique";

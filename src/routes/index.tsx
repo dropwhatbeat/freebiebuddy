@@ -25,7 +25,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
-  const balance = 1240;
+  const balance = 658;
   const expiringTotal = 320;
   const [bag, setBag] = useState<RedeemedEntry[]>([]);
   const held = bag.reduce((sum, r) => sum + r.points, 0);

@@ -80,9 +80,9 @@ export function ProfileRail({
 
         <div className="mt-3 flex flex-wrap items-center gap-1.5">
           <span className="text-[9px] tracking-[0.18em] text-muted-foreground uppercase">
-            Skin
+            Type
           </span>
-          <Tag>{skinType}</Tag>
+          <Tag>{skinType} skin</Tag>
         </div>
 
         {categories.map((cat) => {

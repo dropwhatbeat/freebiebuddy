@@ -13,7 +13,9 @@ export function BuddyBar({
   thinking = false,
   mood = "calm",
   readKey,
+  className,
 }: {
+  className?: string;
   title: string;
   body: string;
   caution?: string | undefined;
@@ -25,7 +27,7 @@ export function BuddyBar({
   const reduced = useReducedMotion();
 
   return (
-    <div className="sticky top-4 z-20 -mx-1 px-1">
+    <div className={"sticky top-4 z-20 -mx-1 px-1 " + (className ?? "")}>
       <div className="flex items-start gap-4 border border-gold/50 bg-gold/8 px-4 py-3 backdrop-blur-md">
         <CompactOrb className="h-11 w-11 shrink-0" thinking={thinking} mood={mood} />
 

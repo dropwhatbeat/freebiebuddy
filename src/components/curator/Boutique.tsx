@@ -120,7 +120,9 @@ export function Boutique({
                   onToggleBag={() => (done ? onRemove(reward) : onRedeem(reward))}
                   onQuickView={() => onQuickView(reward)}
                   onHover={() => onExplain(reward)}
+                  onLeave={onClearExplain}
                 />
+
               </motion.div>
             );
           })}

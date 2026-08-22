@@ -84,17 +84,46 @@ export function CompactOrb({
         <circle cx="80" cy="80" r="42" className="stroke-hairline" strokeWidth="1" />
 
         {/* face */}
-        <g className={`fill-ink ${reduced ? "" : "orb-blink"}`}>
+        {thinking && !reduced && (
+          <g className="stroke-ink orb-brow" strokeWidth="1.4" strokeLinecap="round">
+            <path d="M60 64c4-3 9-3 12-1" />
+            <path d="M100 64c-4-3-9-3-12-1" />
+          </g>
+        )}
+        <g
+          className={`fill-ink ${
+            reduced ? "" : thinking ? "orb-eyes-dart" : "orb-blink"
+          }`}
+        >
           <circle cx="66" cy="74" r="3" />
           <circle cx="94" cy="74" r="3" />
         </g>
-        <path
-          d={mood === "caution" ? "M70 96c6-5 14-5 20 0" : "M70 92c6 6 14 6 20 0"}
-          className="stroke-ink"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          fill="none"
-        />
+        {thinking && !reduced ? (
+          <ellipse
+            cx="80"
+            cy="94"
+            rx="6"
+            ry="4.5"
+            className="stroke-ink orb-mouth-think"
+            strokeWidth="1.5"
+            fill="none"
+          />
+        ) : (
+          <path
+            d={mood === "caution" ? "M70 96c6-5 14-5 20 0" : "M70 92c6 6 14 6 20 0"}
+            className="stroke-ink"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            fill="none"
+          />
+        )}
+        {thinking && !reduced && (
+          <g className="fill-gold">
+            <circle cx="112" cy="52" r="2.4" className="orb-bubble" style={{ animationDelay: "0s" }} />
+            <circle cx="122" cy="42" r="3.2" className="orb-bubble" style={{ animationDelay: "0.25s" }} />
+            <circle cx="133" cy="31" r="4" className="orb-bubble" style={{ animationDelay: "0.5s" }} />
+          </g>
+        )}
         {/* blush of light */}
         <path
           d="M54 62c5-6 12-9 20-9"
@@ -102,6 +131,7 @@ export function CompactOrb({
           strokeWidth="1.2"
           strokeLinecap="round"
         />
+
       </svg>
     </motion.div>
   );

@@ -50,10 +50,20 @@ export function ProfileRail({
 
         <div className="mt-3 flex flex-wrap items-center gap-1.5">
           <span className="text-[9px] tracking-[0.18em] text-muted-foreground uppercase">
-            Type
+            Skin
           </span>
-          <Tag>{skinType} skin</Tag>
+          <Tag>{skinType}</Tag>
         </div>
+
+        <div className="mt-2 flex flex-wrap items-center gap-1.5">
+          <span className="text-[9px] tracking-[0.18em] text-muted-foreground uppercase">
+            Hair
+          </span>
+          <Tag>{defaultProfile.hairType}</Tag>
+          <Tag>{defaultProfile.hairTexture}</Tag>
+          <Tag>{defaultProfile.scalpType} scalp</Tag>
+        </div>
+
 
         {categories.map((cat) => {
           const mine = concerns.filter(

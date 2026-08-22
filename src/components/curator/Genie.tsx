@@ -66,16 +66,11 @@ export function GenieMascot({
         </g>
 
         {/* eyes */}
-        <g className="fill-ink">
-          <motion.g
-            animate={reduced ? {} : { scaleY: [1, 1, 0.1, 1] }}
-            transition={{ duration: 5, repeat: Infinity, times: [0, 0.86, 0.9, 0.94] }}
-            style={{ transformOrigin: "70px 46px" }}
-          >
-            <circle cx="61" cy="46" r="2.6" />
-            <circle cx="79" cy="46" r="2.6" />
-          </motion.g>
+        <g className={`fill-ink ${reduced ? "" : "blink"}`}>
+          <circle cx="61" cy="46" r="2.6" />
+          <circle cx="79" cy="46" r="2.6" />
         </g>
+
         <path
           d="M64 56c4 3.5 8 3.5 12 0"
           className="stroke-ink"
@@ -90,11 +85,9 @@ export function GenieMascot({
         </g>
 
         {/* gold droplet at the tip */}
-        <motion.path
+        <path
           d="M70 178c4 6 7 9 7 13a7 7 0 0 1-14 0c0-4 3-7 7-13z"
-          className="fill-gold"
-          animate={reduced ? {} : { y: [0, 5, 0], opacity: [1, 0.55, 1] }}
-          transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut" }}
+          className={`fill-gold ${reduced ? "" : "droplet"}`}
         />
       </svg>
     </motion.div>

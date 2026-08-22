@@ -136,15 +136,12 @@ export function PointCurator({
               <MicroSpark /> AI reward scoring
             </p>
             <h1 className="mt-5 max-w-2xl font-serif text-5xl leading-[1.08]">
-              {gaps.length
-                ? `Your points can close ${gaps.length} gap${gaps.length > 1 ? "s" : ""}.`
-                : "Your shelves are complete. Here's what suits you."}
+              Recommended rewards for you
             </h1>
             <p className="mt-5 max-w-xl text-[15px] leading-relaxed text-charcoal">
-              {gaps.length
-                ? `The Curator read your ${skinType.toLowerCase()} skin, ${shelf.length} products across your skin, hair and makeup shelves, and ${selected.length} concerns. Nothing you own answers ${gapLabels}.`
-                : `The Curator read your ${skinType.toLowerCase()} skin and ${shelf.length} products across your skin, hair and makeup shelves. Every concern is covered, so it is ranking on skin condition and what you enjoy.`}
+              {`Freebie Buddy read your ${skinType.toLowerCase()} skin, ${shelf.length} products across your skin, hair and makeup shelves and ${selected.length} concerns to rank what your points can get today.`}
             </p>
+
 
             <div className="mt-10 grid gap-8 border-t border-hairline pt-10 lg:grid-cols-[150px_minmax(0,1fr)]">
               <CompactOrb

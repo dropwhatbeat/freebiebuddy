@@ -329,7 +329,7 @@ export interface Reward {
   brand: string;
   category: Category;
   points: number;
-  tier: "All members" | "Gold & above";
+  tier: "All members" | "Gold & Black";
   covers: ConcernId[];
   vessel: number;
   /** Product shot from the Beauty Pass catalogue. */
@@ -844,7 +844,7 @@ export const rewardCatalogue: Reward[] = [
     brand: "Clinique",
     category: "Skin",
     points: 500,
-    tier: "Gold & above",
+    tier: "Gold & Black",
     covers: ["hydration", "barrier"],
     vessel: 3,
     image: "https://image-optimizer-reg.production.sephora-asia.net/images/product_images/1_GWP_192333067406-Clinique-Moisture-Surge-100H-Auto-Replenishing-Hydrator-15-ml-Default_108edc1300e22c9258933fc2eb15798e22f46d93_1626892485.png",
@@ -857,7 +857,7 @@ export const rewardCatalogue: Reward[] = [
     brand: "Dr. Dennis Gross",
     category: "Skin",
     points: 500,
-    tier: "Gold & above",
+    tier: "Gold & Black",
     covers: ["texture", "brightening", "pores"],
     vessel: 4,
     image: "https://image-optimizer-reg.production.sephora-asia.net/images/product_images/1_GWP_695866582861-DR-DENNIS-GROSS-Alpha-Beta-Extra-Strength-Daily-Peel-3-Treatments-Defau_618b2274b3c43463034ac36dce0010cecdc07a0f_1666279713.png",
@@ -876,7 +876,7 @@ export const rewardCatalogue: Reward[] = [
     brand: "Dr. Dennis Gross",
     category: "Skin",
     points: 500,
-    tier: "Gold & above",
+    tier: "Gold & Black",
     covers: ["texture", "brightening", "pores"],
     vessel: 5,
     image: "https://image-optimizer-reg.production.sephora-asia.net/images/product_images/1_GWP_695866581468-DR-DENNIS-GROSS-Alpha-Beta-Universal-Daily-Peel-3-Treatments-Default_856e65950090415cc46f9ff9f4a15f4703d8af75_1666279711.png",
@@ -895,7 +895,7 @@ export const rewardCatalogue: Reward[] = [
     brand: "Shiseido",
     category: "Skin",
     points: 500,
-    tier: "Gold & above",
+    tier: "Gold & Black",
     covers: ["barrier", "firmness", "hydration"],
     vessel: 0,
     image: "https://image-optimizer-reg.production.sephora-asia.net/images/product_images/1_GWP_729238078932-Shiseido-Ultimune-Power-Infusing-Serum-10_18a3eadc240a53ac2644d5d4c2b48f400391810a_1739189754.png",
@@ -923,7 +923,7 @@ export const rewardCatalogue: Reward[] = [
     brand: "Augustinus Bader",
     category: "Skin",
     points: 750,
-    tier: "Gold & above",
+    tier: "Gold & Black",
     covers: ["barrier", "hydration"],
     vessel: 2,
     image: "https://image-optimizer-reg.production.sephora-asia.net/images/product_images/1_GWP_5060990632549-AUGUSTINUS-BADER-The-Sunscreen-SPF-50-PA_35130001c08342fd417cfd88c3fc110421eac16c_1742385400.png",
@@ -938,7 +938,7 @@ export const rewardCatalogue: Reward[] = [
     brand: "Allies of Skin",
     category: "Skin",
     points: 1000,
-    tier: "Gold & above",
+    tier: "Gold & Black",
     covers: ["firmness", "barrier", "texture"],
     vessel: 3,
     image: "https://image-optimizer-reg.production.sephora-asia.net/images/product_images/1_GWP_8885014075471-Allies-of-Skin-Multi-Peptides-GF-Advance_367d5cdd6d31f1eb3de4db787fd761d350bfb7e5_1737115345.png",

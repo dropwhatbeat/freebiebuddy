@@ -12,7 +12,7 @@ export default defineTool({
     category: z.enum(["Skin", "Hair", "Makeup"]).optional().describe("Filter by product category."),
     maxPoints: z.number().int().positive().optional().describe("Only rewards at or below this points cost."),
     tier: z
-      .enum(["All members", "Gold & above"])
+      .enum(["All members", "Gold & Black"])
       .optional()
       .describe("Filter by the membership tier required."),
   },

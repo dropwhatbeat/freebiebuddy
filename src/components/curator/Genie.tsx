@@ -28,27 +28,24 @@ export function GenieMascot({
       >
         {/* orbiting analysis sparks */}
         <g className="stroke-gold" strokeWidth="0.9" opacity={thinking ? 0.9 : 0.35}>
-          <motion.ellipse
+          <ellipse
             cx="70"
             cy="70"
             rx="52"
             ry="20"
-            animate={reduced ? {} : { rotate: 360 }}
-            transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
-            style={{ transformOrigin: "70px 70px" }}
             strokeDasharray="2 6"
+            className={reduced ? "" : "orbit-slow"}
           />
-          <motion.ellipse
+          <ellipse
             cx="70"
             cy="70"
             rx="44"
             ry="30"
-            animate={reduced ? {} : { rotate: -360 }}
-            transition={{ duration: 26, repeat: Infinity, ease: "linear" }}
-            style={{ transformOrigin: "70px 70px" }}
             strokeDasharray="1 7"
+            className={reduced ? "" : "orbit-reverse"}
           />
         </g>
+
 
         <g
           className="text-ink"

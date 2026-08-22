@@ -215,6 +215,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .orb-spin, .orb-spin-rev, .orb-blink, .orb-sweep, .orb-scan,
+  .orb-eyes-dart, .orb-brow, .orb-mouth-think, .orb-bubble,
   .shelf-wobble, .bottle-jiggle { animation: none; }
 }
 

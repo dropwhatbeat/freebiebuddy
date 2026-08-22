@@ -44,9 +44,11 @@ function Index() {
   }) => {
     if (cost > available || bag.some((r) => r.id === id)) return;
     setBag((prev) => [...prev, { id, name: product, points: cost }]);
+    const fromExpiring = Math.min(cost, expiringLeft);
     toast(`${product} added to your bag.`, {
-      description: `${cost.toLocaleString()} points held. ${(available - cost).toLocaleString()} points still available.`,
+      description: `${cost.toLocaleString()} points held${fromExpiring ? ` — ${fromExpiring.toLocaleString()} from your expiring balance` : ""}. ${(available - cost).toLocaleString()} points still available.`,
     });
+
   };
 
   const handleRemove = (id: string) => {

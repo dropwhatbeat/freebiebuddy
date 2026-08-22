@@ -279,11 +279,20 @@ export function PointCurator({
               <h2 className="font-serif text-2xl">Top picks</h2>
 
               <p className="text-[10px] tracking-[0.2em] text-muted-foreground uppercase">
-                {busy ? "Scoring…" : `${picks.length} picks`}
+                {busy ? "Scoring…" : `${picks.length} ${picks.length === 1 ? "pick" : "picks"}`}
               </p>
             </div>
 
-            <div className="grid gap-px bg-hairline sm:grid-cols-2 xl:grid-cols-3">
+            <div
+              className={
+                "grid gap-px bg-hairline " +
+                (picks.length === 1
+                  ? "sm:grid-cols-1 xl:grid-cols-2"
+                  : picks.length === 2
+                    ? "sm:grid-cols-2"
+                    : "sm:grid-cols-2 xl:grid-cols-3")
+              }
+            >
               {busy
                 ? [0, 1, 2].map((i) => (
                     <div key={i} className="animate-pulse bg-card p-6">

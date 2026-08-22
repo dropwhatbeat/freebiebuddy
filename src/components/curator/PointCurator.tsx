@@ -139,6 +139,39 @@ export function PointCurator({
 
   const busy = recommend.isPending;
 
+  /** Rotating, wish-aware status lines so the wait never feels static. */
+  const loadingLines = useMemo(() => {
+    const shelfCount = shelf.length;
+    if (wish) {
+      const w = wish.trim();
+      return [
+        `Reading “${w}” against your beauty profile…`,
+        `Filtering the rewards catalogue for “${w}”…`,
+        `Checking what your ${shelfCount} shelf products already cover…`,
+        `Matching “${w}” with your ${skinType.toLowerCase()} skin…`,
+        `Ranking the closest matches and writing your read…`,
+      ];
+    }
+    return [
+      `Reading your ${skinType.toLowerCase()} skin profile…`,
+      `Scanning your ${shelfCount} products across skin, hair and makeup…`,
+      `Weighing your ${selected.length} beauty concerns…`,
+      `Scoring the rewards your points can reach…`,
+      `Picking the three that fit you best…`,
+    ];
+  }, [wish, shelf.length, skinType, selected.length]);
+
+  const [loadingStep, setLoadingStep] = useState(0);
+  useEffect(() => {
+    if (!busy) return;
+    setLoadingStep(0);
+    const id = window.setInterval(
+      () => setLoadingStep((i) => (i + 1) % loadingLines.length),
+      2000,
+    );
+    return () => window.clearInterval(id);
+  }, [busy, loadingLines]);
+
   const askWish = (value: string) => {
     setWish(value);
     recommend.mutate({ shelf, wish: value });
@@ -170,16 +203,14 @@ export function PointCurator({
     title: quip
       ? "Freebie Buddy · ahem"
       : busy
-        ? "Freebie Buddy · scoring your rewards"
+        ? "Freebie Buddy · thinking"
         : activePick || active
           ? `Freebie Buddy · ${shown?.reward.name}`
           : `Freebie Buddy · here's what I suggest for you`,
     body: quip
       ? quip
       : busy
-        ? wish
-          ? `Reading your shelves against “${wish}” — one moment.`
-          : "Scoring every reward against your profile and shelves — one moment."
+        ? (loadingLines[loadingStep] ?? loadingLines[0]!)
         : activePick
           ? `${activePick.score.headline} ${activePick.aiRoutine}`
           : active

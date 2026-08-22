@@ -60,45 +60,96 @@ export function PointCurator({
     [skinType, selected, shelf, points],
   );
 
-  const ranked = useMemo(
-    () =>
-      [...scored].sort(
-        (a, b) =>
-          tierRank[a.score.tier] - tierRank[b.score.tier] ||
-          Number(b.score.affordable) - Number(a.score.affordable) ||
-          b.score.gapsClosed.length - a.score.gapsClosed.length ||
-          a.reward.points - b.reward.points,
-      ),
-    [scored],
-  );
+  const [wish, setWish] = useState<string | null>(null);
+  const [shelfDirty, setShelfDirty] = useState(false);
+  const runRecommend = useServerFn(recommendRewards);
 
-  /** Up to three picks: gap-closers first, one per open concern where possible. */
-  const picks = useMemo(() => {
-    const chosen: ScoredReward[] = [];
-    const usedConcerns = new Set<ConcernId>();
-    const usable = ranked.filter((s) => s.score.tier !== "Not for your skin");
+  const recommend = useMutation({
+    mutationFn: (vars: { shelf: string[]; wish: string | null }) =>
+      runRecommend({
+        data: {
+          skinType,
+          concerns: selected,
+          enjoys: defaultProfile.enjoys,
+          shelf: vars.shelf,
+          points,
+          wish: vars.wish,
+        },
+      }) as Promise<RecommendResult>,
+    onSuccess: () => setShelfDirty(false),
+  });
 
-    for (const s of usable.filter((x) => x.score.gapsClosed.length)) {
-      if (chosen.length >= 3) break;
-      if (s.score.gapsClosed.some((c) => usedConcerns.has(c))) continue;
-      s.score.gapsClosed.forEach((c) => usedConcerns.add(c));
-      chosen.push(s);
-    }
-    for (const s of usable) {
-      if (chosen.length >= 3) break;
-      if (!chosen.includes(s)) chosen.push(s);
-    }
-    return chosen;
-  }, [ranked]);
+  const pointsRef = useRef(points);
+  pointsRef.current = points;
+
+  // First read on load.
+  const started = useRef(false);
+  useEffect(() => {
+    if (started.current) return;
+    started.current = true;
+    recommend.mutate({ shelf, wish: null });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const result: RecommendResult =
+    recommend.data ??
+    ({
+      picks: rulePicks({
+        skinType,
+        concerns: selected,
+        enjoys: defaultProfile.enjoys,
+        shelf,
+        points,
+      }),
+      intro: ruleIntro({
+        skinType,
+        concerns: selected,
+        enjoys: defaultProfile.enjoys,
+        shelf,
+        points,
+      }),
+      source: "rules",
+    } satisfies RecommendResult);
+
+  /** AI picks, hydrated with catalogue data and the local meter. */
+  const picks: ScoredReward[] = useMemo(() => {
+    const byId = new Map(scored.map((s) => [s.reward.id, s]));
+    return result.picks
+      .map((p) => {
+        const base = byId.get(p.rewardId);
+        if (!base) return null;
+        return {
+          reward: base.reward,
+          score: {
+            ...base.score,
+            tier: p.tier,
+            segments: p.tier === "Best fit" ? 3 : p.tier === "Good fit" ? 2 : 1,
+            headline: p.reason,
+          },
+          aiRoutine: p.routine,
+          aiCaution: p.caution ?? undefined,
+        } as ScoredReward & { aiRoutine: string; aiCaution?: string };
+      })
+      .filter((p): p is ScoredReward & { aiRoutine: string; aiCaution?: string } => Boolean(p));
+  }, [result, scored]);
 
   const active = activeId ? scored.find((s) => s.reward.id === activeId) : undefined;
   const quick = quickId ? scored.find((s) => s.reward.id === quickId) : undefined;
-  const shown = active ?? picks[0];
+  const activePick = activeId ? picks.find((p) => p.reward.id === activeId) : undefined;
+  const shown = activePick ?? active ?? picks[0];
 
-  const gapLabels = gaps
-    .map((g) => allConcerns.find((c) => c.id === g)?.label ?? g)
-    .join(", ")
-    .toLowerCase();
+  const busy = recommend.isPending;
+
+  const askWish = (value: string) => {
+    setWish(value);
+    recommend.mutate({ shelf, wish: value });
+  };
+
+  const clearWish = () => {
+    setWish(null);
+    recommend.mutate({ shelf, wish: null });
+  };
+
 
   const handleRedeem = (r: Reward) => {
     if (redeemed.includes(r.id) || r.points > points) return;

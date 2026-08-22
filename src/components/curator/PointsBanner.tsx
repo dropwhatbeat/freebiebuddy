@@ -12,12 +12,14 @@ export function PointsBanner({
   expiring,
   expiryDate,
   redeemed,
+  onRemove,
   onSummary,
 }: {
   points: number;
   expiring: number;
   expiryDate: string;
   redeemed: RedeemedEntry[];
+  onRemove: (id: string) => void;
   onSummary: () => void;
 }) {
   const reduced = useReducedMotion();

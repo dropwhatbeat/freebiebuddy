@@ -292,26 +292,26 @@ export function PointCurator({
                     </div>
                   ))
                 : picks.map(({ reward, score }, i) => (
+                    <motion.div
+                      key={reward.id}
+                      initial={reduced ? false : { opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.35, delay: i * 0.08 }}
+                    >
+                      <RewardCard
+                        reward={reward}
+                        score={score}
+                        done={redeemed.includes(reward.id)}
+                        active={activeId === reward.id}
+                        onToggleBag={() =>
+                          redeemed.includes(reward.id) ? handleRemove(reward) : handleRedeem(reward)
+                        }
+                        onQuickView={() => setQuickId(reward.id)}
+                        onHover={() => setActiveId(reward.id)}
+                      />
+                    </motion.div>
+                  ))}
 
-                <motion.div
-                  key={reward.id}
-                  initial={reduced ? false : { opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.35, delay: i * 0.08 }}
-                >
-                  <RewardCard
-                    reward={reward}
-                    score={score}
-                    done={redeemed.includes(reward.id)}
-                    active={activeId === reward.id}
-                    onToggleBag={() =>
-                      redeemed.includes(reward.id) ? handleRemove(reward) : handleRedeem(reward)
-                    }
-                    onQuickView={() => setQuickId(reward.id)}
-                    onHover={() => setActiveId(reward.id)}
-                  />
-                </motion.div>
-              ))}
             </div>
           </motion.section>
 

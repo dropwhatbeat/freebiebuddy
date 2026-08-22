@@ -22,7 +22,7 @@ interface Line {
 interface Message {
   title: string;
   body: string;
-  caution?: string;
+  caution?: string | undefined;
 }
 
 const idleMessage: Message = {

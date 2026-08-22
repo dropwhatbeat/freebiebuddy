@@ -118,7 +118,7 @@ export function GenieSpeech({
 }: {
   title: string;
   body: string;
-  caution?: string;
+  caution?: string | undefined;
 }) {
   const reduced = useReducedMotion();
   return (

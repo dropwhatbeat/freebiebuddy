@@ -126,15 +126,25 @@ export function PointsBanner({
                     {redeemed.map((r) => (
                       <li
                         key={r.id}
-                        className="flex items-center justify-between py-2.5 text-[13px]"
+                        className="flex items-center justify-between gap-4 py-2.5 text-[13px]"
                       >
                         <span>{r.name}</span>
-                        <span className="text-[11px] tracking-[0.16em] text-muted-foreground uppercase tabular-nums">
-                          −{r.points.toLocaleString()} pts
+                        <span className="flex items-center gap-4">
+                          <span className="text-[11px] tracking-[0.16em] text-muted-foreground uppercase tabular-nums">
+                            −{r.points.toLocaleString()} pts
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => onRemove(r.id)}
+                            className="text-[10px] tracking-[0.18em] text-charcoal uppercase hover:text-gold hover:underline focus-visible:ring-1 focus-visible:ring-gold focus-visible:outline-none"
+                          >
+                            Remove
+                          </button>
                         </span>
                       </li>
                     ))}
                   </ul>
+
                 )}
               </div>
             </motion.div>

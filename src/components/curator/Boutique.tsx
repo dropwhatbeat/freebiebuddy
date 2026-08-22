@@ -20,12 +20,14 @@ export function Boutique({
   scored,
   redeemed,
   onRedeem,
+  onRemove,
   onExplain,
   activeId,
 }: {
   scored: ScoredReward[];
   redeemed: string[];
   onRedeem: (r: Reward) => void;
+  onRemove: (r: Reward) => void;
   onExplain: (r: Reward) => void;
   activeId: string | null;
 }) {
@@ -170,20 +172,23 @@ export function Boutique({
                 <div className="mt-auto flex items-center gap-4 pt-6">
                   <button
                     type="button"
-                    disabled={done || !score.affordable}
-                    onClick={() => onRedeem(reward)}
+                    disabled={!done && !score.affordable}
+                    onClick={() => (done ? onRemove(reward) : onRedeem(reward))}
                     className={`flex-1 py-2.5 text-[10px] tracking-[0.2em] uppercase transition-colors focus-visible:ring-1 focus-visible:ring-gold focus-visible:outline-none ${
-                      done || !score.affordable
-                        ? "border border-hairline text-muted-foreground"
-                        : "border border-ink text-ink hover:bg-ink hover:text-primary-foreground"
+                      done
+                        ? "border border-gold bg-gold-soft/30 text-ink hover:bg-transparent"
+                        : !score.affordable
+                          ? "border border-hairline text-muted-foreground"
+                          : "border border-ink text-ink hover:bg-ink hover:text-primary-foreground"
                     }`}
                   >
                     {done
-                      ? "In your bag"
+                      ? "In bag — remove"
                       : score.affordable
                         ? "Add to bag"
                         : `${score.shortBy.toLocaleString()} pts short`}
                   </button>
+
                   <button
                     type="button"
                     onClick={() => onExplain(reward)}

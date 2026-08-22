@@ -45,6 +45,15 @@ function Index() {
     });
   };
 
+  const handleRemove = (id: string) => {
+    const entry = bag.find((r) => r.id === id);
+    if (!entry) return;
+    setBag((prev) => prev.filter((r) => r.id !== id));
+    toast(`${entry.name} removed from your bag.`, {
+      description: `${entry.points.toLocaleString()} points released.`,
+    });
+  };
+
   return (
     <div className="min-h-screen bg-background font-sans text-foreground antialiased">
       <SiteHeader />
@@ -55,6 +64,7 @@ function Index() {
           expiring={320}
           expiryDate="31 Aug 2027"
           redeemed={bag}
+          onRemove={handleRemove}
           onSummary={() =>
             toast("Points summary", {
               description:
@@ -66,6 +76,7 @@ function Index() {
           points={available}
           redeemed={bag.map((r) => r.id)}
           onRedeem={handleRedeem}
+          onRemove={handleRemove}
         />
       </main>
 

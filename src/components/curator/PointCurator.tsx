@@ -19,10 +19,12 @@ export function PointCurator({
   points,
   redeemed,
   onRedeem,
+  onRemove,
 }: {
   points: number;
   redeemed: string[];
   onRedeem: (r: { id: string; product: string; points: number }) => void;
+  onRemove: (id: string) => void;
 }) {
   const reduced = useReducedMotion();
   const [railOpen, setRailOpen] = useState(true);

@@ -4,6 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 
 import { CompactOrb, CuratorSpeech, MicroSpark } from "./CompactOrb";
+import { BuddyBar } from "./BuddyBar";
 import { ProfileRail } from "./ProfileRail";
 import { Boutique, type ScoredReward } from "./Boutique";
 import { RewardCard } from "./RewardCard";

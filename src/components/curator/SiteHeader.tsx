@@ -15,7 +15,7 @@ export function SiteHeader() {
                 className="fill-gold"
               />
             </svg>
-            Gold Beauty Pass
+            Black Beauty Pass
           </span>
           <span className="h-3 w-px bg-hairline" aria-hidden="true" />
           <span>Emily, Singapore</span>

@@ -127,7 +127,7 @@ export function ProductBottle({ id, className }: BottleProps & { id: string }) {
       strokeLinecap="round"
       strokeLinejoin="round"
     >
-      {shapes[id] ?? shapes.moisturiser}
+      {shapes[id] ?? shapes['moisturiser']}
     </svg>
   );
 }

@@ -258,7 +258,7 @@ export function PointCurator({
                       <motion.div
                         initial={reduced ? false : { opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: "auto" }}
-                        exit={reduced ? undefined : { opacity: 0, height: 0 }}
+                        exit={reduced ? { opacity: 1 } : { opacity: 0, height: 0 }}
                         transition={{ duration: 0.25, ease: "easeOut" }}
                         className="overflow-hidden"
                       >
@@ -327,7 +327,7 @@ export function PointCurator({
             <motion.div
               initial={reduced ? false : { opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
-              exit={reduced ? undefined : { opacity: 0, height: 0 }}
+              exit={reduced ? { opacity: 1 } : { opacity: 0, height: 0 }}
               transition={{ duration: 0.35, ease: "easeOut" }}
               className="overflow-hidden"
             >
@@ -360,7 +360,7 @@ export function PointCurator({
                         <motion.p
                           initial={reduced ? false : { opacity: 0, height: 0 }}
                           animate={{ opacity: 1, height: "auto" }}
-                          exit={reduced ? undefined : { opacity: 0, height: 0 }}
+                          exit={reduced ? { opacity: 1 } : { opacity: 0, height: 0 }}
                           transition={{ duration: 0.22 }}
                           className="mt-4 overflow-hidden border-t border-hairline pt-3 text-[13px] leading-relaxed text-charcoal"
                         >

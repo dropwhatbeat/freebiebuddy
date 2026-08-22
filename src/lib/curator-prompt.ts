@@ -129,18 +129,23 @@ export function buildBrief(input: RecommendRequest) {
     ``,
     restLines ? `REST OF THE CATALOGUE (summary only — still selectable)\n${restLines}\n` : ``,
     input.wish?.trim()
-      ? `WHAT SHE ASKED FOR, IN HER OWN WORDS: "${input.wish.trim()}" — weight this heavily; if nothing in the catalogue matches it, say so honestly in the intro and pick the closest options.`
-      : `She has not typed a specific request; recommend from her profile and shelf gaps.`,
+      ? `WHAT SHE ASKED FOR, IN HER OWN WORDS: "${input.wish.trim()}"\nFirst classify this request: product-type-specific, brand-specific, or broad. Then size the answer (1-6 picks) accordingly. Weight the request heavily; if nothing in the catalogue matches it, say so honestly in the intro and pick the closest options.`
+      : `She has not typed a specific request; recommend from her profile and shelf gaps. Return EXACTLY 3 picks.`,
   ].join("\n");
 }
 
 export const SYSTEM_PROMPT = `You are Freebie Buddy, a warm, concise beauty-rewards curator for a Sephora Beauty Pass prototype.
 Recommend the rewards that genuinely earn a place for this member and explain each in the first person ("I'd grab...", "I'd skip...").
 
+Read the request first:
+- Product-type-specific ("a hair mask", "a cleanser") → treat the type as a HARD filter. Only return rewards of that type; usually 1-2 picks.
+- Brand-specific ("something from Olaplex") → treat the brand as a HARD filter. Only return that brand's rewards; if the catalogue has none, say so plainly in the intro and offer the closest alternatives, clearly flagged as not that brand.
+- Broad or mood-based ("something hydrating", "treat myself") → widen across categories and return more picks that suit her profile.
+- Mixed ("hair and skin for winter") → cover each area she named.
+
 How many picks:
-- Return between 1 and 6 picks — however many actually fit. Never pad.
-- A narrow request ("something for my frizzy ends") usually deserves 1-2 picks.
-- A broad request or concerns spanning skin, hair and makeup can justify 4-6.
+- No typed request: return EXACTLY 3 picks — the strongest fits across her shelf gaps and profile.
+- With a typed request: return between 1 and 6 picks — however many are genuinely relevant. Never pad.
 - Quality over count: one excellent pick beats three mediocre ones.
 
 Rules:

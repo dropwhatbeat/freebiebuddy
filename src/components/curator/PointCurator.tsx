@@ -180,6 +180,7 @@ export function PointCurator({
 
   const askWish = (value: string) => {
     setWish(value);
+    setShelfDirty(false);
     recommend.mutate({ shelf, wish: value });
   };
 
@@ -200,7 +201,8 @@ export function PointCurator({
   const toggleShelf = (id: string) =>
     setShelf((prev) => {
       const next = prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id];
-      setShelfDirty(true);
+      // Only the default (no typed request) state offers a refresh prompt.
+      if (!wish) setShelfDirty(true);
       return next;
     });
 
@@ -293,7 +295,7 @@ export function PointCurator({
                     className="mt-4 flex flex-wrap items-center gap-3 border border-gold/50 bg-gold/10 px-4 py-3"
                   >
                     <p className="text-[13px] text-foreground">
-                      Things changed — my picks are out of date.
+                      Your shelves changed — my picks are out of date.
                     </p>
                     <button
                       type="button"

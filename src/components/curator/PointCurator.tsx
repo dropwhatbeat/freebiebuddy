@@ -82,15 +82,8 @@ export function PointCurator({
     onSuccess: () => setShelfDirty(false),
   });
 
-  // Bag changes make the current picks stale — offer a refresh.
-  const lastBag = useRef<string>(redeemed.join(","));
-  useEffect(() => {
-    const key = redeemed.join(",");
-    if (key === lastBag.current) return;
-    lastBag.current = key;
-    if (recommend.data) setShelfDirty(true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [redeemed]);
+
+
 
   // First read on load.
   const started = useRef(false);

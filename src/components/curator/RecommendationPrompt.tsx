@@ -2,10 +2,9 @@ import { useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 
 const examples = [
-  "Something for dry ends",
-  "A night out look",
+  "Help my blackheads and fine lines",
+  "Boost my Skincredible hydration score",
   "Travel-friendly minis",
-  "Calm my sensitive skin",
 ];
 
 export function RecommendationPrompt({

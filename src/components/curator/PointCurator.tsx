@@ -280,6 +280,7 @@ export function PointCurator({
                 <RecommendationPrompt
                   wish={wish}
                   busy={busy}
+                  concerns={selected}
                   onSubmit={askWish}
                   onClear={clearWish}
                 />

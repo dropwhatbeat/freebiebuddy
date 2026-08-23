@@ -1,30 +1,60 @@
 import { useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
+import type { ConcernId } from "./data";
 
-const examples = [
-  "Something for my blackheads and fine lines",
-  "Boost my hydration and help with my pores",
-  "Travel-friendly minis just for me",
-];
+/** Friendly, first-person prompts for each concern the profile knows about. */
+const templates: Partial<Record<ConcernId, string>> = {
+  blackheads: "Something for my blackheads",
+  pigmentation: "Help fade my dark spots",
+  lines: "Something for my fine lines",
+  hydration: "Boost my hydration",
+  barrier: "Soften my sensitive skin",
+  texture: "Smooth my rough texture",
+  pores: "Help with my pores",
+  firmness: "Firm up my skin",
+  frizz: "Tame my frizz",
+  dandruff: "Calm my flaky scalp",
+  hairdryness: "Something for my dry hair",
+  scalp: "Balance my scalp",
+  damage: "Fix my split ends",
+  volume: "Add some volume",
+  longwear: "Makeup that stays all day",
+  coverage: "Fuller coverage",
+  lipcare: "Care for my lips",
+};
+
+function pickPrompts(concerns: ConcernId[], count: number): string[] {
+  const pool = concerns.filter((c) => templates[c]);
+  // Shuffle and take `count` distinct concerns.
+  const shuffled = [...pool].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, count).map((c) => templates[c]!);
+}
 
 export function RecommendationPrompt({
   wish,
   busy,
+  concerns,
   onSubmit,
   onClear,
 }: {
   wish: string | null;
   busy: boolean;
+  concerns: ConcernId[];
   onSubmit: (value: string) => void;
   onClear: () => void;
 }) {
   const [draft, setDraft] = useState("");
+  const [examples, setExamples] = useState<string[]>(() =>
+    pickPrompts(concerns, 3),
+  );
 
   const send = (value: string) => {
     const trimmed = value.trim();
     if (!trimmed || busy) return;
     setDraft("");
     onSubmit(trimmed);
+    // Regenerate fresh, random prompts for the next round.
+    setExamples(pickPrompts(concerns, 3));
   };
 
   return (

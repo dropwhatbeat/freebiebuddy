@@ -60,7 +60,7 @@ export function RewardCard({
         <button
           type="button"
           onClick={onQuickView}
-          className="absolute inset-x-0 bottom-0 bg-ink/90 py-2 text-[10px] tracking-[0.22em] text-primary-foreground uppercase opacity-0 transition-opacity duration-200 group-hover:opacity-100 focus-visible:opacity-100 focus-visible:outline-none"
+          className="absolute inset-x-0 bottom-0 bg-muted-foreground/70 py-2 text-[10px] tracking-[0.22em] text-primary-foreground uppercase opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-hover:bg-muted-foreground/80 focus-visible:opacity-100 focus-visible:outline-none"
         >
           Quick view
         </button>

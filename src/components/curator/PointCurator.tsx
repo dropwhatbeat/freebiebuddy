@@ -75,11 +75,22 @@ export function PointCurator({
           enjoys: defaultProfile.enjoys,
           shelf: vars.shelf,
           points,
+          inBag: redeemed,
           wish: vars.wish,
         },
       }) as Promise<RecommendResult>,
     onSuccess: () => setShelfDirty(false),
   });
+
+  // Bag changes make the current picks stale — offer a refresh.
+  const lastBag = useRef<string>(redeemed.join(","));
+  useEffect(() => {
+    const key = redeemed.join(",");
+    if (key === lastBag.current) return;
+    lastBag.current = key;
+    if (recommend.data) setShelfDirty(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [redeemed]);
 
   // First read on load.
   const started = useRef(false);
@@ -99,6 +110,7 @@ export function PointCurator({
         enjoys: defaultProfile.enjoys,
         shelf,
         points,
+        inBag: redeemed,
       }),
       intro: ruleIntro({
         skinType,
@@ -106,6 +118,7 @@ export function PointCurator({
         enjoys: defaultProfile.enjoys,
         shelf,
         points,
+        inBag: redeemed,
       }),
       source: "rules",
     } satisfies RecommendResult);
@@ -287,7 +300,7 @@ export function PointCurator({
                     className="mt-4 flex flex-wrap items-center gap-3 border border-gold/50 bg-gold/10 px-4 py-3"
                   >
                     <p className="text-[13px] text-foreground">
-                      Your shelves changed — my picks are out of date.
+                      Things changed — my picks are out of date.
                     </p>
                     <button
                       type="button"

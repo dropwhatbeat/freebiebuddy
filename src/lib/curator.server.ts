@@ -56,6 +56,7 @@ interface RawInput {
   enjoys: string[];
   shelf: string[];
   points: number;
+  inBag?: string[] | undefined;
   wish?: string | null | undefined;
 }
 
@@ -66,6 +67,7 @@ export async function recommendRewardsWithAi(raw: RawInput): Promise<RecommendRe
     enjoys: raw.enjoys as ConcernId[],
     shelf: raw.shelf,
     points: raw.points,
+    inBag: raw.inBag ?? [],
     wish: raw.wish ?? null,
   };
 
@@ -100,8 +102,9 @@ export async function recommendRewardsWithAi(raw: RawInput): Promise<RecommendRe
 
       const answer = await result.output;
 
+      const bag = new Set(input.inBag ?? []);
       const picks: AiPick[] = answer.picks
-        .filter((p) => validRewardIds.has(p.rewardId))
+        .filter((p) => validRewardIds.has(p.rewardId) && !bag.has(p.rewardId))
         .filter((p, i, arr) => arr.findIndex((x) => x.rewardId === p.rewardId) === i)
         .slice(0, maxPicks);
 

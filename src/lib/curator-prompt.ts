@@ -15,6 +15,8 @@ export interface RecommendRequest {
   enjoys: ConcernId[];
   shelf: string[];
   points: number;
+  /** Reward ids already in her bag — never recommend these again. */
+  inBag?: string[];
   wish?: string | null;
 }
 
@@ -45,7 +47,9 @@ export function buildEvidence(input: RecommendRequest) {
     points: input.points,
   };
 
+  const inBag = new Set(input.inBag ?? []);
   const scored = rewardCatalogue
+    .filter((reward) => !inBag.has(reward.id))
     .map((reward) => ({ reward, score: scoreReward(reward, scoreInput) }))
     .sort(
       (a, b) =>
@@ -122,6 +126,9 @@ export function buildBrief(input: RecommendRequest) {
     `Concerns: ${input.concerns.map(label).join(", ")}`,
     `Enjoys redeeming for: ${input.enjoys.map(label).join(", ")}`,
     `Points available: ${input.points}`,
+    input.inBag?.length
+      ? `Already in her bag (EXCLUDED from the catalogue below — never recommend these again): ${input.inBag.join(", ")}`
+      : `Nothing in her bag yet.`,
     `Concerns her current shelves do NOT answer: ${gaps.length ? gaps.map(label).join(", ") : "none — every stated concern is covered"}`,
     ``,
     `SKINCREDIBLE SCAN (measured in store, ${defaultProfile.scan.date} at ${defaultProfile.scan.store}) — supporting evidence only`,
@@ -159,7 +166,7 @@ How many picks:
 - Quality over count: one excellent pick beats three mediocre ones.
 
 Rules:
-- Choose ONLY reward ids that appear in the catalogue (detailed or summary list).
+- Choose ONLY reward ids that appear in the catalogue (detailed or summary list). Rewards already in her bag are excluded — never suggest them; move on to the next best options she can still claim.
 - Prefer rewards that close a concern her current shelf does not answer; if nothing is missing, pick on skin type and the categories she enjoys.
 - Prefer rewards she can afford with her points. Never recommend one that clashes with her skin type or an active on her shelf unless she explicitly asked for it — and then label it "Okay fit".
 - Her declared Beauty Profile concerns outrank the Skincredible scan whenever they conflict. Use scan metrics as supporting evidence and cite a number when it strengthens a reason (e.g. "your scan puts hydration at 64").

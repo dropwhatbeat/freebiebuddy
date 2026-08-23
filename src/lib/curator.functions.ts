@@ -9,6 +9,7 @@ const InputSchema = z.object({
   enjoys: z.array(z.string()),
   shelf: z.array(z.string()),
   points: z.number().int().nonnegative(),
+  inBag: z.array(z.string()).optional(),
   wish: z.string().max(300).nullable().optional(),
 });
 

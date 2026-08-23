@@ -30,6 +30,7 @@ export interface EvalCase {
     enjoys?: ConcernId[];
     shelf?: string[];
     points?: number;
+    inBag?: string[];
   };
   expect: Expectation[];
 }
@@ -104,6 +105,19 @@ export const cases: EvalCase[] = [
     why: "Hydration reads 64 on the scan and is not a declared concern. The scan can justify a pick and never drive one.",
     wish: "something hydrating",
     expect: [{ kind: "pickCount", min: 1, max: 6 }],
+  },
+  {
+    name: "rewards already in her bag are never suggested",
+    why: "The prompt excludes anything already in her bag. Re-recommending it wastes a pick on something she cannot claim.",
+    wish: null,
+    member: { inBag: ["pixi-glow-tonic-exfoliating-toner", "ouai-anti-frizz-cr-me"] },
+    expect: [
+      { kind: "pickCount", exactly: 3 },
+      {
+        kind: "excludesRewards",
+        rewardIds: ["pixi-glow-tonic-exfoliating-toner", "ouai-anti-frizz-cr-me"],
+      },
+    ],
   },
   {
     name: "empty shelf",

@@ -54,6 +54,7 @@ for (const c of cases) {
     enjoys: c.member?.enjoys ?? defaultProfile.enjoys,
     shelf: c.member?.shelf ?? defaultShelf,
     points: c.member?.points ?? DEFAULT_POINTS,
+    ...(c.member?.inBag ? { inBag: c.member.inBag } : {}),
     wish: c.wish,
   };
 

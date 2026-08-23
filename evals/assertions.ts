@@ -18,6 +18,7 @@ export type Expectation =
   | { kind: "onlyBrand"; brand: string }
   | { kind: "introMentions"; text: string }
   | { kind: "includesReward"; rewardId: string }
+  | { kind: "excludesRewards"; rewardIds: string[] }
   | { kind: "grounded" };
 
 export interface CheckResult {
@@ -176,6 +177,14 @@ export function check(
         label: `introMentions "${exp.text}"`,
         pass,
         detail: pass ? "mentioned" : `intro did not mention it`,
+      };
+    }
+    case "excludesRewards": {
+      const leaked = picks.filter((p) => exp.rewardIds.includes(p.rewardId)).map((p) => p.rewardId);
+      return {
+        label: `excludesRewards ${exp.rewardIds.join(",")}`,
+        pass: leaked.length === 0,
+        detail: leaked.length ? `recommended anyway: ${leaked.join(", ")}` : "none recommended",
       };
     }
     case "includesReward": {

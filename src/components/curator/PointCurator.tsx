@@ -66,9 +66,14 @@ export function PointCurator({
   const [shelfDirty, setShelfDirty] = useState(false);
   const runRecommend = useServerFn(recommendRewards);
 
+  /** Only the newest run may write results; older ones are dropped. */
+  const runSeq = useRef(0);
+  const [aiResult, setAiResult] = useState<RecommendResult | null>(null);
+
   const recommend = useMutation({
-    mutationFn: (vars: { shelf: string[]; wish: string | null }) =>
-      runRecommend({
+    mutationFn: async (vars: { shelf: string[]; wish: string | null }) => {
+      const id = ++runSeq.current;
+      const data = (await runRecommend({
         data: {
           skinType,
           concerns: selected,
@@ -78,24 +83,35 @@ export function PointCurator({
           inBag: redeemed,
           wish: vars.wish,
         },
-      }) as Promise<RecommendResult>,
-    onSuccess: () => setShelfDirty(false),
+      })) as RecommendResult;
+      // A newer run started while this one was in flight — discard it.
+      if (id !== runSeq.current) return null;
+      return data;
+    },
+    onSuccess: (data) => {
+      if (!data) return;
+      setAiResult(data);
+      setShelfDirty(false);
+    },
   });
 
+  /** Start a run, replacing any in-flight one. */
+  const startRecommend = (vars: { shelf: string[]; wish: string | null }) => {
+    recommend.mutate(vars);
+  };
 
-
-
-  // First read on load.
+  // First read on load — exactly once per page load, StrictMode included.
   const started = useRef(false);
   useEffect(() => {
     if (started.current) return;
     started.current = true;
-    recommend.mutate({ shelf, wish: null });
+    startRecommend({ shelf, wish: null });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+
   const result: RecommendResult =
-    recommend.data ??
+    aiResult ??
     ({
       picks: rulePicks({
         skinType,
@@ -181,12 +197,12 @@ export function PointCurator({
   const askWish = (value: string) => {
     setWish(value);
     setShelfDirty(false);
-    recommend.mutate({ shelf, wish: value });
+    startRecommend({ shelf, wish: value });
   };
 
   const clearWish = () => {
     setWish(null);
-    recommend.mutate({ shelf, wish: null });
+    startRecommend({ shelf, wish: null });
   };
 
 
@@ -300,7 +316,7 @@ export function PointCurator({
                     </p>
                     <button
                       type="button"
-                      onClick={() => recommend.mutate({ shelf, wish })}
+                      onClick={() => startRecommend({ shelf, wish })}
                       className="bg-foreground px-4 py-2 text-[10px] tracking-[0.2em] text-background uppercase"
                     >
                       Update recommendations

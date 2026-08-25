@@ -197,12 +197,12 @@ export function PointCurator({
   const askWish = (value: string) => {
     setWish(value);
     setShelfDirty(false);
-    recommend.mutate({ shelf, wish: value });
+    startRecommend({ shelf, wish: value });
   };
 
   const clearWish = () => {
     setWish(null);
-    recommend.mutate({ shelf, wish: null });
+    startRecommend({ shelf, wish: null });
   };
 
 

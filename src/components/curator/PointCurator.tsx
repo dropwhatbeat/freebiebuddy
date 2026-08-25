@@ -111,7 +111,7 @@ export function PointCurator({
 
 
   const result: RecommendResult =
-    recommend.data ??
+    aiResult ??
     ({
       picks: rulePicks({
         skinType,

@@ -1,32 +1,25 @@
-# Fix the errors and show Freebie Buddy's reasoning on the picks
+# Fix Freebie Buddy's text getting stuck on a loading line
 
-I reproduced the page and read the AI logs. The model is answering fine — every recent call returns a full set of picks with reasons — but two things go wrong on the page.
+No fit labels are added to the cards — dropping that idea.
 
-## What's actually broken
+## What's going wrong
 
-**1. The AI reasoning never appears on the pick cards.** The server returns a `reason`, `routine`, `caution` and a fit tier for every pick, but a reward card only renders brand, name, points and the button. The only place the reasoning shows up is the sticky Freebie Buddy bar, and only while you hover a card. So the picks look like a plain product grid with no explanation — exactly the "no answer even though products are recommended" symptom.
-
-**2. A hydration error on every page load.** The three example prompt chips are shuffled with `Math.random()` while the component initialises, so the server renders one set of chips ("Help fade my dark spots") and the browser renders another ("Calm my flaky scalp"). React throws "Hydration failed because the server rendered text didn't match the client" and re-renders the whole page tree. This is the error in the logs.
-
-**3. Wasted, cancelled AI calls.** Several gateway requests are logged as cancelled after ~1.5s, in pairs seconds apart — the recommendation is being fired more than once and the earlier one dropped. These still burn time and sometimes credits.
+The Freebie Buddy bar cross-fades between reads using a key that changes with each new line. While the recommendation is running, that key cycles through the five status lines every 2 seconds and then repeats the same values again (line 1, 2, 3, 4, 5, 1, 2, …). The bar animates with a "wait" mode: the old line must finish fading out before the new one is allowed in. When a repeated key arrives while that same key is still fading out — which is exactly what long loads plus scrolling/hover interruptions produce — the animation never resolves, the stale line stays mounted, and every later read (including the finished recommendation) is blocked from rendering. That is the "stuck at Weighing your 6 beauty concerns" state: the picks arrive and render, but the speech bubble is frozen on an old loading line.
 
 ## The fix
 
-**Put the reasoning back on the cards.** Each top-pick card gains, under the product name:
-- the fit label (Best fit / Good fit / Okay fit) with the existing gold segment meter
-- Freebie Buddy's reason in her own words, clamped to a few lines
-- the routine line, and the caution when there is one, in a quieter style
+- Give the bar a read key that only ever moves forward (an incrementing counter bumped whenever the read text changes) instead of one that recycles values, so a key can never collide with a copy of itself that is still exiting.
+- Make the text itself the source of truth: the paragraph renders the current body directly, with the fade applied as decoration, so even if an animation stalls the visible text is still the latest read. When the recommendation finishes, the bubble snaps to the final answer.
+- Stop the status-line rotation the moment the request resolves, so no late tick can overwrite the finished read.
 
-The Buddy bar keeps its hover behaviour and the boutique grid below stays as-is (rule-scored, no AI text), so the difference between "curated for you" and "browse everything" stays clear.
+## Also worth fixing in the same pass
 
-**Make the prompt chips hydration-safe.** Render a fixed, deterministic set of chips for the first paint, then shuffle to a random set once the page is interactive, so server and client always agree. Chips still reshuffle after each request.
-
-**Stop the duplicate calls.** Guard the initial recommendation so only one request goes out per load, and cancel-and-replace cleanly when a new request supersedes an in-flight one.
+- **Hydration error on load.** The three example prompt chips are shuffled with `Math.random()` during initial render, so the server and browser render different chips and React throws "Hydration failed…" and re-renders the tree — extra churn during exactly the load window where the bug appears. Render a deterministic set for first paint, then shuffle once the page is interactive.
+- **Duplicate AI calls.** Some gateway requests are logged as cancelled after ~1.5s in pairs, meaning a recommendation run is fired twice and one dropped. Guard the initial run so only one request goes out per load.
 
 ## Technical notes
 
-- `RewardCard.tsx` takes optional `reason` / `routine` / `caution` props; `PointCurator.tsx` passes the AI pick's `score.headline`, `aiRoutine`, `aiCaution` for the top-pick grid and passes nothing in the boutique grid.
-- Fit meter reuses the existing `score.tier` / `score.segments` values already set from the AI tier.
-- `RecommendationPrompt.tsx`: `useState` initialises from a deterministic slice of `concerns`; a `useEffect` on mount swaps in `pickPrompts(concerns, 3)`.
-- `PointCurator.tsx`: keep the `started` ref guard but make it resilient to StrictMode double-invoke, and let the mutation supersede in-flight runs instead of racing them.
-- No change to the prompt, model, or server function contract.
+- `BuddyBar.tsx`: keep `AnimatePresence` but drop `mode="wait"` (or key on a monotonic counter), and render `body`/`caution` from props on every render rather than only inside the presence child.
+- `PointCurator.tsx`: replace the composite `readKey` string with a counter incremented in an effect on body change; clear the loading interval on resolve.
+- `RecommendationPrompt.tsx`: deterministic `useState` seed + `useEffect` shuffle on mount.
+- No change to the prompt, the model, the server function, or the reward cards.

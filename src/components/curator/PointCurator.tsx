@@ -316,7 +316,7 @@ export function PointCurator({
                     </p>
                     <button
                       type="button"
-                      onClick={() => recommend.mutate({ shelf, wish })}
+                      onClick={() => startRecommend({ shelf, wish })}
                       className="bg-foreground px-4 py-2 text-[10px] tracking-[0.2em] text-background uppercase"
                     >
                       Update recommendations

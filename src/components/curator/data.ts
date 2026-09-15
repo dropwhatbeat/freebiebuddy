@@ -327,7 +327,7 @@ export interface ScanMetric {
 }
 
 /**
- * Emily's declared Beauty Profile plus her in-store Skincredible scan.
+ * Emily's declared Beauty Profile plus her in-store Skin Scan.
  * Declared concerns are the source of truth; the scan is supporting evidence.
  */
 export const defaultProfile = {

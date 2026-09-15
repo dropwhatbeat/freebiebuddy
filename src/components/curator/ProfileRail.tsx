@@ -112,10 +112,10 @@ export function ProfileRail({
         </button>
       </section>
 
-      {/* Skincredible scan — measured evidence */}
+      {/* Skin Scan — measured evidence */}
       <section className="border-b border-hairline px-5 py-4">
         <div className="flex items-baseline justify-between">
-          <h3 className="font-serif text-base">Skincredible scan</h3>
+          <h3 className="font-serif text-base">Skin Scan</h3>
           <span className="font-serif text-lg text-gold">{defaultProfile.scan.score}</span>
         </div>
 
